@@ -1,0 +1,26 @@
+body {
+	background: #835C3B;
+	overflow: hidden;
+	font-family: "arial";
+	text-align: center;
+}
+
+body h1 {
+	color: #47311f;
+}
+
+#canvasDiv {
+	position:relative;
+	background: tan;
+	width: 80vw;
+	min-width: 160px;
+	height: 80vh;
+	margin: auto;
+	padding: 20px;
+}
+
+canvas {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+}
