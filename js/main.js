@@ -36,6 +36,18 @@ function Board(contextGrid, contextTiles) {
 		this.height = this.tile_set.length * this.tile_height;
 	}
 
+	this.getXYByCoord = function(x,y){
+		x = x - this.origin.x;
+		y = y - this.origin.y;
+		if(y < 0){return null;}
+		if(x < 0){return null;}
+		x = (x - (x % this.tile_width))/this.tile_width;
+		y = (y - (y % this.tile_height))/this.tile_height;
+		if(y >= this.tile_set.length){return null;}
+		if(x >= this.tile_set[0].length){return null;}
+		return {y:y, x:x};
+	}
+
 	this.getTileByCoord = function(x,y){
 		x = x - this.origin.x;
 		y = y - this.origin.y;
@@ -103,6 +115,8 @@ var canvasColours = document.getElementById("canvasColours");
 var contextColours = canvasColours.getContext("2d");
 
 var board;
+var boardState = [[],[],[],[],[],[],[],[]];
+var eraseMode = false;
 
 function getMousePos(canvasGrid, event) {
 	var rect = canvasGrid.getBoundingClientRect();
@@ -128,11 +142,33 @@ function vibrate(events){
 
 function clearAll(){
 	board.clearTiles();
+	boardState = [[],[],[],[],[],[],[],[]];
 }
 
-function paintTile(tile){
-	tile.fillTile(fillStyle="#7289DA")
+function getColour(){
+	return document.getElementById("brush").value;
 }
+
+function paintTile(tile, xy){
+	var colour = getColour()
+	if(eraseMode){
+		tile.clearTile()
+		delete boardState[xy.y][xy.x];
+		return
+	}
+	tile.fillTile(fillStyle=colour)
+	boardState[xy.y][xy.x] = colour;
+}
+
+function mousedown_global(evt) {
+	mousedown = true;
+}
+
+function mouseup_global(evt) {
+	evt.preventDefault();
+	mousedown = false;
+}
+
 
 function mousedown_func(evt) {
 	evt.preventDefault();
@@ -145,8 +181,11 @@ function mousemove_func(evt) {
 	evt.preventDefault();
 	if(mousedown){
 		var mousePos = getMousePos(canvasGrid, evt);
-		console.log(board.getTileByCoord(mousePos.x, mousePos.y));
-		paintTile(board.getTileByCoord(mousePos.x, mousePos.y))
+		var tile = board.getTileByCoord(mousePos.x, mousePos.y)
+		if(tile){
+			console.log(tile);
+			paintTile(board.getTileByCoord(mousePos.x, mousePos.y), board.getXYByCoord(mousePos.x, mousePos.y))
+		}
 	}
 }
 
@@ -158,7 +197,6 @@ function mouseup_func(evt) {
 function dblclick_func(evt) {
 	evt.preventDefault();
 	var mousePos = getMousePos(canvasGrid, evt);
-	board.getTileByCoord(mousePos.x, mousePos.y).clearTile()
 }
 
 function touchstart_func(evt) {
@@ -248,6 +286,17 @@ function clear_state(){
 	init_canvases();
 }
 
+function set_erase_mode(val){
+	eraseMode = val;
+	if(eraseMode){
+		document.getElementById("brushsvg").classList.remove("active");
+		document.getElementById("pencilsvg").classList.add("active");
+	} else {
+		document.getElementById("pencilsvg").classList.remove("active");
+		document.getElementById("brushsvg").classList.add("active");
+	}
+}
+
 var currentLoc = 0;
 function secretCode(keycode){
 	var allowedKeys = {
@@ -278,6 +327,9 @@ function secretCode(keycode){
 
 first_load();
 
+window.addEventListener('mouseup', mouseup_global, {passive:false});
+window.addEventListener('mousedown', mousedown_global, {passive:false});
+
 canvasGrid.addEventListener('mousedown', mousedown_func, {passive:false});
 canvasGrid.addEventListener('touchstart', touchstart_func, {passive:false});
 canvasGrid.addEventListener('mousemove', mousemove_func, {passive:false});
@@ -288,6 +340,11 @@ canvasGrid.addEventListener('touchcancel', touchend_func, {passive:false});
 canvasGrid.addEventListener('dblclick', dblclick_func, {passive:false});
 window.addEventListener('keydown', keydown_func, {passive:false});
 document.defaultView.addEventListener('resize', resize_func, {passive:true});
+
+document.getElementById("brushsvg").addEventListener('click', function(){set_erase_mode(false)}, {passive:true});
+document.getElementById("pencilsvg").addEventListener('click', function(){set_erase_mode(!eraseMode)}, {passive:true});
+document.getElementById("xsvg").addEventListener('click', clearAll, {passive:true});
+document.getElementById("arrowsvg").addEventListener('click', console.log, {passive:true});
 
 function Tile(x, y, height, width, contextGrid, contextTile){
 	this.is_hex = false;

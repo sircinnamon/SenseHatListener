@@ -1,5 +1,4 @@
 body {
-	background: #835C3B;
 	overflow: hidden;
 	font-family: "arial";
 	text-align: center;
@@ -11,7 +10,6 @@ body h1 {
 
 #canvasDiv {
 	position:relative;
-	background: tan;
 	width: 80vw;
 	min-width: 160px;
 	height: 80vh;
@@ -23,4 +21,45 @@ canvas {
 	position: absolute;
 	top: 20px;
 	left: 20px;
+}
+
+input[type="color"] {
+	padding: 0px;
+	border: 0px;
+	background-color: #23272a;
+	max-height: 10vh;
+	max-width: 15vw;
+	width: 10vh;
+	height: 15vw;
+}
+
+svg {
+	max-height: 10vh;
+	max-width: 12vw;
+	width: 10vh;
+	margin-left: 2px;
+	margin-right: 2px;
+}
+
+#brushsvg.active {
+	border-bottom: 5px solid #7289DA;
+}
+
+#pencilsvg.active {
+	border-top: 5px solid #7289DA;
+}
+
+#buttonDiv {
+	width: 80vw;
+	min-width: 160px;
+	margin: auto;
+	padding: 20px;
+}
+
+#buttonDiv div.right {
+	float: right;
+}
+
+#buttonDiv input, #buttonDiv svg{
+	float: left;
 }
