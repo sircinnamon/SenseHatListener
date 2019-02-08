@@ -23,13 +23,14 @@ docker run -d \
 	-v /etc/localtime:/etc/localtime:ro \
 	--name $PYTHON_CONTAINER \
 	--net $NETWORK_NAME --ip $PYTHON_IP \
-	python:3.4.9-slim-jessie python /sensehat_listener.py 80
+	sensehat python /sensehat_listener.py 80
 
 docker rm $NGINX_CONTAINER
 docker run -d \
 	-v $(pwd)/nginx.conf:/etc/nginx/nginx.conf \
+	-v $(pwd):/var/www/html/ \
 	-v /etc/localtime:/etc/localtime:ro \
 	--name $NGINX_CONTAINER \
 	--add-host=$PYTHON_HOSTNAME:$PYTHON_IP \
 	--net $NETWORK_NAME --ip $NGINX_IP \
-	registry.labs.eng.shaw.ca/apps/nginx:v1.14.0
+	nginx:1.14.0
