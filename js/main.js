@@ -325,12 +325,11 @@ function submit(){
 function format_board(board){
 	output_board = [];
 	for (var i = 0; i < 8; i++) {
-		output_board[i] = [];
 		for (var j = 0; j < 8; j++) {
 			if(!board[i][j]){
-				output_board[i][j] = [0,0,0]
+				output_board[i*8 + j] = [0,0,0]
 			} else {
-				output_board[i][j] = hexToRgb(board[i][j])
+				output_board[i*8 + j] = hexToRgb(board[i][j])
 			}
 		}
 	}
@@ -393,7 +392,7 @@ document.defaultView.addEventListener('resize', resize_func, {passive:true});
 document.getElementById("brushsvg").addEventListener('click', function(){set_erase_mode(false)}, {passive:true});
 document.getElementById("pencilsvg").addEventListener('click', function(){set_erase_mode(!eraseMode)}, {passive:true});
 document.getElementById("xsvg").addEventListener('click', clearAll, {passive:true});
-document.getElementById("arrowsvg").addEventListener('click', console.log, {passive:true});
+document.getElementById("arrowsvg").addEventListener('click', submit, {passive:true});
 
 function Tile(x, y, height, width, contextGrid, contextTile){
 	this.is_hex = false;

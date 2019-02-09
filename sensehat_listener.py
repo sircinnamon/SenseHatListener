@@ -8,16 +8,21 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import logging
 from sense_hat import SenseHat
 import json
+from threading import Timer
+
 sense = SenseHat()
 sense.set_rotation(270)
+t = threading.Timer(5.0, sense.clear)
 
 def handle_post_body(body):
     data = json.loads(body)
     if "board" in data:
-        sense.set_pixels(data.board);
-    else if "string" in data:
-        sense.show_message(data.string);
-
+        sense.set_pixels(data["board"]);
+        # Reset clear timer
+        t.cancel()
+        t.start()
+    elif "string" in data:
+        sense.show_message(data["string"]);
 
 class S(BaseHTTPRequestHandler):
     def _set_response(self):
