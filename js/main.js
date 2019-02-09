@@ -297,6 +297,54 @@ function set_erase_mode(val){
 	}
 }
 
+function submit(){
+	var xhr = new XMLHttpRequest();
+	if ("withCredentials" in xhr) {
+		// Check if the XMLHttpRequest object has a "withCredentials" property.
+		// "withCredentials" only exists on XMLHTTPRequest2 objects.
+		xhr.open("POST", "/post", true);
+	} else if (typeof XDomainRequest != "undefined") {
+		// Otherwise, check if XDomainRequest.
+		// XDomainRequest only exists in IE, and is IE's way of making CORS requests.
+		xhr = new XDomainRequest();
+		xhr.open(method, url);
+	} else {
+		return;
+		console.log("Not supported")
+	}
+
+	xhr.onreadystatechange = function() { // Call a function when the state changes.
+		if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+			// Request finished. Do processing here.
+			console.log("Done")
+		}
+	}
+	xhr.send(JSON.stringify(format_board(boardState)));
+}
+
+function format_board(board){
+	output_board = [];
+	for (var i = 0; i < 8; i++) {
+		output_board[i] = [];
+		for (var j = 0; j < 8; j++) {
+			if(!board[i][j]){
+				output_board[i][j] = [0,0,0]
+			} else {
+				output_board[i][j] = hexToRgb(board[i][j])
+			}
+		}
+	}
+}
+
+function hexToRgb(hex) {
+	var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+	return result ? [
+		parseInt(result[1], 16),
+		parseInt(result[2], 16),
+		parseInt(result[3], 16)
+	] : null;
+}
+
 var currentLoc = 0;
 function secretCode(keycode){
 	var allowedKeys = {

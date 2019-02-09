@@ -23,6 +23,7 @@ docker run -d \
 	-v /etc/localtime:/etc/localtime:ro \
 	--name $PYTHON_CONTAINER \
 	--net $NETWORK_NAME --ip $PYTHON_IP \
+	--privileged \
 	sensehat python /sensehat_listener.py 80
 
 docker rm $NGINX_CONTAINER
@@ -33,4 +34,5 @@ docker run -d \
 	--name $NGINX_CONTAINER \
 	--add-host=$PYTHON_HOSTNAME:$PYTHON_IP \
 	--net $NETWORK_NAME --ip $NGINX_IP \
+	-p 8080:80 \
 	nginx:1.14.0
