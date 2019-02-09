@@ -302,12 +302,12 @@ function submit(){
 	if ("withCredentials" in xhr) {
 		// Check if the XMLHttpRequest object has a "withCredentials" property.
 		// "withCredentials" only exists on XMLHTTPRequest2 objects.
-		xhr.open("POST", "/post", true);
+		xhr.open("POST", "/post/", true);
 	} else if (typeof XDomainRequest != "undefined") {
 		// Otherwise, check if XDomainRequest.
 		// XDomainRequest only exists in IE, and is IE's way of making CORS requests.
 		xhr = new XDomainRequest();
-		xhr.open(method, url);
+		xhr.open("POST", "/post/", true);
 	} else {
 		return;
 		console.log("Not supported")
@@ -319,7 +319,7 @@ function submit(){
 			console.log("Done")
 		}
 	}
-	xhr.send(JSON.stringify(format_board(boardState)));
+	xhr.send(JSON.stringify({board:format_board(boardState)}));
 }
 
 function format_board(board){
@@ -334,6 +334,7 @@ function format_board(board){
 			}
 		}
 	}
+	return output_board
 }
 
 function hexToRgb(hex) {

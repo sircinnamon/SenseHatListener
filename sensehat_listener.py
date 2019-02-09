@@ -7,8 +7,18 @@ Usage::
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import logging
 from sense_hat import SenseHat
+import json
 sense = SenseHat()
 sense.set_rotation(270)
+
+def handle_post_body(body){
+    data = json.loads(body)
+    if(data.board):
+        sense.set_pixels(data.board);
+    else if(data.string):
+        sense.show_message(data.string);
+
+}
 
 class S(BaseHTTPRequestHandler):
     def _set_response(self):
@@ -26,7 +36,7 @@ class S(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length) # <--- Gets the data itself
         logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n",
                 str(self.path), str(self.headers), post_data.decode('utf-8'))
-        sense.show_message(post_data.decode('utf-8'))
+        handle_post_body(post_data.decode('utf-8'))
 
         self._set_response()
         self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
