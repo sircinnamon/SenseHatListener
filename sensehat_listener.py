@@ -12,14 +12,16 @@ from threading import Timer
 
 sense = SenseHat()
 sense.set_rotation(270)
-t = threading.Timer(5.0, sense.clear)
+t = Timer(5.0, sense.clear)
 
 def handle_post_body(body):
+    global t
     data = json.loads(body)
     if "board" in data:
         sense.set_pixels(data["board"]);
         # Reset clear timer
         t.cancel()
+        t = Timer(5.0, sense.clear)
         t.start()
     elif "string" in data:
         sense.show_message(data["string"]);
