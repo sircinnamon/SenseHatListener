@@ -13,9 +13,9 @@ sense.set_rotation(270)
 
 def handle_post_body(body):
     data = json.loads(body)
-    if(data.board):
+    if "board" in data:
         sense.set_pixels(data.board);
-    else if(data.string):
+    else if "string" in data:
         sense.show_message(data.string);
 
 
