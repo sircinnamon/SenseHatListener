@@ -11,14 +11,13 @@ import json
 sense = SenseHat()
 sense.set_rotation(270)
 
-def handle_post_body(body){
+def handle_post_body(body):
     data = json.loads(body)
     if(data.board):
         sense.set_pixels(data.board);
     else if(data.string):
         sense.show_message(data.string);
 
-}
 
 class S(BaseHTTPRequestHandler):
     def _set_response(self):
