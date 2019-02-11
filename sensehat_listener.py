@@ -24,6 +24,8 @@ def handle_post_body(body):
         t = Timer(5.0, sense.clear)
         t.start()
     elif "string" in data:
+        if(len(data["string"])>32):
+            data["string"] = data["string"][:32]
         sense.show_message(data["string"]);
 
 class S(BaseHTTPRequestHandler):
