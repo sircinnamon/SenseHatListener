@@ -49,11 +49,15 @@ svg {
 	border-top: 5px solid #7289DA;
 }
 
+#arrowsvg, #xsvg {
+	margin-left: 30px;
+}
+
 #buttonDiv {
 	width: 80vw;
-	min-width: 160px;
+	min-width: 350px;
 	margin: auto;
-	padding: 20px;
+	padding: 20px 0px;
 }
 
 #buttonDiv div.right {
@@ -62,4 +66,38 @@ svg {
 
 #buttonDiv input, #buttonDiv svg{
 	float: left;
+}
+
+.submitDiv .tooltiptext {
+	opacity: 0;
+	width: 80px;
+	background-color: #43b581;
+	color: #fff;
+	text-align: center;
+	padding: 5px 0;
+	border-radius: 6px;
+	font-weight: bold;
+
+	/* Position the tooltip text - see examples below! */
+	position: absolute;
+	z-index: 1;
+	top: -80%;
+	left: 18%;
+	transition: opacity 0.5s linear;
+}
+
+.submitDiv {
+	position: relative;
+	display: inline-block;
+}
+
+.submitDiv .tooltiptext::after {
+	content: " ";
+	position: absolute;
+	top: 98%; /* At the bottom of the tooltip */
+	left: 50%;
+	margin-left: -9px;
+	border-width: 10px;
+	border-style: solid;
+	border-color: #43b581 transparent transparent transparent;
 }
