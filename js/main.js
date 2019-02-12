@@ -297,7 +297,6 @@ function set_erase_mode(val){
 }
 
 function submit(){
-	return;
 	var xhr = new XMLHttpRequest();
 	if ("withCredentials" in xhr) {
 		// Check if the XMLHttpRequest object has a "withCredentials" property.

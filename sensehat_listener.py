@@ -18,7 +18,7 @@ def handle_post_body(body):
     global t
     data = json.loads(body)
     if "board" in data:
-        if(len(board)!=64):
+        if(len(data["board"])!=64):
             return
         sense.set_pixels(data["board"]);
         # Reset clear timer
