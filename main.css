@@ -70,7 +70,8 @@ svg {
 
 .submitDiv .tooltiptext {
 	opacity: 0;
-	width: 80px;
+	width: 6vw;
+	font-size: 3vh;
 	background-color: #43b581;
 	color: #fff;
 	text-align: center;
@@ -81,7 +82,7 @@ svg {
 	/* Position the tooltip text - see examples below! */
 	position: absolute;
 	z-index: 1;
-	top: -80%;
+	top: -6vh;
 	left: 18%;
 	transition: opacity 0.5s linear;
 }
