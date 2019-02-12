@@ -37,27 +37,29 @@ svg {
 	max-height: 10vh;
 	max-width: 12vw;
 	width: 10vh;
-	margin-left: 2px;
-	margin-right: 2px;
+	margin-left: 1vw;
+	margin-right: 1vw;
 }
 
 #brushsvg.active {
-	border-bottom: 5px solid #7289DA;
+	border-bottom: 1vh solid #7289DA;
+	border-radius: 1vh;
 }
 
 #pencilsvg.active {
-	border-top: 5px solid #7289DA;
+	border-top: 1vh solid #7289DA;
+	border-radius: 1vh;
 }
 
 #arrowsvg, #xsvg {
-	margin-left: 30px;
+	margin-left: 2vw;
 }
 
 #buttonDiv {
 	width: 80vw;
 	min-width: 350px;
 	margin: auto;
-	padding: 20px 0px;
+	margin-top: 2vh;
 }
 
 #buttonDiv div.right {
@@ -72,12 +74,13 @@ svg {
 	opacity: 0;
 	visibility: hidden;
 	user-select: none;
+	min-width: 10vw;
 	width: 6vw;
 	font-size: 3vh;
 	background-color: #43b581;
 	color: #fff;
 	text-align: center;
-	padding: 5px 0;
+	padding: 0.3vh 0;
 	border-radius: 6px;
 	font-weight: bold;
 
@@ -99,8 +102,8 @@ svg {
 	position: absolute;
 	top: 98%; /* At the bottom of the tooltip */
 	left: 50%;
-	margin-left: -9px;
-	border-width: 10px;
+	margin-left: -1vmin;
+	border-width: 1vmin;
 	border-style: solid;
 	border-color: #43b581 transparent transparent transparent;
 }
