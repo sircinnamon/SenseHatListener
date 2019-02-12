@@ -70,6 +70,8 @@ svg {
 
 .submitDiv .tooltiptext {
 	opacity: 0;
+	visibility: hidden;
+	user-select: none;
 	width: 6vw;
 	font-size: 3vh;
 	background-color: #43b581;

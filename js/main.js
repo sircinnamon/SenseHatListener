@@ -317,7 +317,11 @@ function submit(){
 			// Request finished. Do processing here.
 			// console.log("Done")
 			document.getElementById("sentTooltip").style.opacity = "1";
-			setTimeout(function(){document.getElementById("sentTooltip").style.opacity = "0";}, 3000);
+			document.getElementById("sentTooltip").style.visibility = "visible";
+			setTimeout(function(){
+				document.getElementById("sentTooltip").style.opacity = "0";
+				document.getElementById("sentTooltip").style.visibility = "hidden";
+			}, 3000);
 		}
 	}
 	xhr.send(JSON.stringify({board:format_board(boardState)}));
