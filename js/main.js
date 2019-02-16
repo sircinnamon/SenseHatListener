@@ -116,6 +116,8 @@ var contextColours = canvasColours.getContext("2d");
 
 var board;
 var boardState = [[],[],[],[],[],[],[],[]];
+var boardHistory = [];
+var boardHistoryStart = [[],[],[],[],[],[],[],[]];
 var eraseMode = false;
 
 function getMousePos(canvasGrid, event) {
@@ -143,6 +145,8 @@ function vibrate(events){
 function clearAll(){
 	board.clearTiles();
 	boardState = [[],[],[],[],[],[],[],[]];
+	boardHistory = [];
+	boardHistoryStart = [];
 }
 
 function getColour(){
@@ -154,10 +158,20 @@ function paintTile(tile, xy){
 	if(eraseMode){
 		tile.clearTile()
 		delete boardState[xy.y][xy.x];
+		historyUpdate(xy, "#FFFFFF");
 		return
 	}
 	tile.fillTile(fillStyle=colour)
 	boardState[xy.y][xy.x] = colour;
+	historyUpdate(xy, colour);
+}
+
+function historyUpdate(xy, colour){
+	boardHistory.push({colour:colour, x:xy.x, y:xy.y})
+	while(boardHistory.length > 256){
+		var px = boardHistory.shift()
+		boardHistoryStart[px.y][px.x] = px.colour;
+	}
 }
 
 function mousedown_global(evt) {
@@ -296,7 +310,7 @@ function set_erase_mode(val){
 	}
 }
 
-function submit(){
+function submit(mode){
 	var xhr = new XMLHttpRequest();
 	if ("withCredentials" in xhr) {
 		// Check if the XMLHttpRequest object has a "withCredentials" property.
@@ -322,7 +336,11 @@ function submit(){
 			}, 3000);
 		}
 	}
-	xhr.send(JSON.stringify({board:format_board(boardState)}));
+	if(mode=="history"){
+		xhr.send(JSON.stringify({start:format_board(boardHistoryStart),sequence:format_sequence(boardHistory)}));
+	} else {
+		xhr.send(JSON.stringify({board:format_board(boardState)}));
+	}
 }
 
 function format_board(board){
@@ -337,6 +355,14 @@ function format_board(board){
 		}
 	}
 	return output_board
+}
+
+function format_sequence(sequence){
+	new_seq = []
+	for (var i = 0; i < sequence.length; i++) {
+		new_seq.push({x:sequence[i].x, y: sequence[i].y, colour:hexToRgb(sequence[i].colour)})
+	}
+	return new_seq
 }
 
 function hexToRgb(hex) {

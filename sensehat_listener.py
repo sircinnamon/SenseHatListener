@@ -51,9 +51,11 @@ def processString(data):
     time.sleep(1+len(data["string"])*0.1)
 
 def processSeq(data):
+    if "start" in data and len(start.data)==64:
+        sense.set_pixels(data["start"]);
     for pixel in data["sequence"]:
         if "colour" not in pixel:
-            pixel["colour"] = (255,255,255)
+            pixel["colour"] = (0,0,0)
         if "x" not in pixel: pixel["x"] = 0
         if "y" not in pixel: pixel["y"] = 0
         sense.set_pixel(pixel["x"], pixel["y"], pixel["colour"])
