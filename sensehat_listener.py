@@ -33,9 +33,9 @@ def worker():
             if(len(data["string"])>32):
                 data["string"] = data["string"][:32]
             processString(data);
-        elif "seq" in data:
-            if(len(data["seq"])>256):
-                data["seq"] = data["string"][:256]
+        elif "sequence" in data:
+            if(len(data["sequence"])>256):
+                data["sequence"] = data["sequence"][:256]
             processString(data);
         q.task_done()
 
@@ -56,7 +56,7 @@ def processSeq(data):
             pixel["colour"] = (255,255,255)
         if "x" not in pixel: pixel["x"] = 0
         if "y" not in pixel: pixel["y"] = 0
-        sense.set_pixel(x=pixel["x"], y=pixel["y"], pixel=pixel["colour"])
+        sense.set_pixel(pixel["x"], pixel["y"], pixel["colour"])
         time.sleep(0.1)
     time.sleep(2)
     sense.clear()
