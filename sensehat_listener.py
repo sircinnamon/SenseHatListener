@@ -9,7 +9,7 @@ import logging
 from sense_hat import SenseHat
 import json
 from threading import Timer, Thread
-import Queue
+from Queue import Queue
 import time
 
 sense = SenseHat()
@@ -44,7 +44,7 @@ def processGrid(data):
 
 def processString(data):
     sense.show_message(data["string"])
-    time.sleep(len(data["string"])*0.8)
+    time.sleep(1+len(data["string"])*0.1)
 
 class S(BaseHTTPRequestHandler):
     def _set_response(self):
