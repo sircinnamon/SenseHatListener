@@ -37,23 +37,29 @@ svg {
 	max-height: 10vh;
 	max-width: 12vw;
 	width: 10vh;
-	margin-left: 2px;
-	margin-right: 2px;
+	margin-left: 1vw;
+	margin-right: 1vw;
 }
 
 #brushsvg.active {
-	border-bottom: 5px solid #7289DA;
+	border-bottom: 1vh solid #7289DA;
+	border-radius: 1vh;
 }
 
 #pencilsvg.active {
-	border-top: 5px solid #7289DA;
+	border-top: 1vh solid #7289DA;
+	border-radius: 1vh;
+}
+
+#arrowsvg, #xsvg {
+	margin-left: 2vw;
 }
 
 #buttonDiv {
 	width: 80vw;
-	min-width: 160px;
+	min-width: 350px;
 	margin: auto;
-	padding: 20px;
+	margin-top: 2vh;
 }
 
 #buttonDiv div.right {
@@ -62,4 +68,40 @@ svg {
 
 #buttonDiv input, #buttonDiv svg{
 	float: left;
+}
+
+.submitDiv .tooltiptext {
+	opacity: 0;
+	user-select: none;
+	width: 10vmin;
+	font-size: 3vmin;
+	background-color: #43b581;
+	color: #fff;
+	text-align: center;
+	padding: 0.3vh 0;
+	border-radius: 6px;
+	font-weight: bold;
+
+	/* Position the tooltip text - see examples below! */
+	position: absolute;
+	z-index: 1;
+	top: -55%;
+	left: calc(50% - 5vmin + 0.5vw);
+	transition: opacity 0.5s linear;
+}
+
+.submitDiv {
+	position: relative;
+	display: inline-block;
+}
+
+.submitDiv .tooltiptext::after {
+	content: " ";
+	position: absolute;
+	top: 98%; /* At the bottom of the tooltip */
+	left: 50%;
+	margin-left: -1vmin;
+	border-width: 1vmin;
+	border-style: solid;
+	border-color: #43b581 transparent transparent transparent;
 }

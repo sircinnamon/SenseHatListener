@@ -26,8 +26,12 @@ def worker():
     while True:
         data = q.get()
         if "board" in data:
+            if(len(data["board"])!=64):
+                return
             processGrid(data)
         elif "string" in data:
+            if(len(data["string"])>32):
+                data["string"] = data["string"][:32]
             processString(data);
         q.task_done()
 
@@ -41,7 +45,6 @@ def processGrid(data):
 def processString(data):
     sense.show_message(data["string"])
     time.sleep(len(data["string"])*0.8)
-
 
 class S(BaseHTTPRequestHandler):
     def _set_response(self):

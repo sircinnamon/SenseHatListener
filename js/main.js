@@ -183,7 +183,6 @@ function mousemove_func(evt) {
 		var mousePos = getMousePos(canvasGrid, evt);
 		var tile = board.getTileByCoord(mousePos.x, mousePos.y)
 		if(tile){
-			console.log(tile);
 			paintTile(board.getTileByCoord(mousePos.x, mousePos.y), board.getXYByCoord(mousePos.x, mousePos.y))
 		}
 	}
@@ -316,7 +315,11 @@ function submit(){
 	xhr.onreadystatechange = function() { // Call a function when the state changes.
 		if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
 			// Request finished. Do processing here.
-			console.log("Done")
+			// console.log("Done")
+			document.getElementById("sentTooltip").style.opacity = "1";
+			setTimeout(function(){
+				document.getElementById("sentTooltip").style.opacity = "0";
+			}, 3000);
 		}
 	}
 	xhr.send(JSON.stringify({board:format_board(boardState)}));
@@ -390,6 +393,7 @@ window.addEventListener('keydown', keydown_func, {passive:false});
 document.defaultView.addEventListener('resize', resize_func, {passive:true});
 
 document.getElementById("brushsvg").addEventListener('click', function(){set_erase_mode(false)}, {passive:true});
+document.getElementById("brush").addEventListener('click', function(){set_erase_mode(false)}, {passive:true});
 document.getElementById("pencilsvg").addEventListener('click', function(){set_erase_mode(!eraseMode)}, {passive:true});
 document.getElementById("xsvg").addEventListener('click', clearAll, {passive:true});
 document.getElementById("arrowsvg").addEventListener('click', submit, {passive:true});
