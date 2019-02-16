@@ -33,6 +33,10 @@ def worker():
             if(len(data["string"])>32):
                 data["string"] = data["string"][:32]
             processString(data);
+        elif "seq" in data:
+            if(len(data["seq"])>256):
+                data["seq"] = data["string"][:256]
+            processString(data);
         q.task_done()
 
 def processGrid(data):
@@ -45,6 +49,18 @@ def processGrid(data):
 def processString(data):
     sense.show_message(data["string"])
     time.sleep(1+len(data["string"])*0.1)
+
+def processSeq(data):
+    for pixel in data["sequence"]:
+        if "colour" not in pixel:
+            pixel["colour"] = (255,255,255)
+        if "x" not in pixel: pixel["x"] = 0
+        if "y" not in pixel: pixel["y"] = 0
+        sense.set_pixel(x=pixel["x"], y=pixel["y"], pixel=pixel["colour"])
+        time.sleep(0.1)
+    time.sleep(2)
+    sense.clear()
+    time.sleep(1)
 
 class S(BaseHTTPRequestHandler):
     def _set_response(self):
