@@ -36,7 +36,7 @@ def worker():
         elif "sequence" in data:
             if(len(data["sequence"])>256):
                 data["sequence"] = data["sequence"][:256]
-            processString(data);
+            processSeq(data);
         q.task_done()
 
 def processGrid(data):
