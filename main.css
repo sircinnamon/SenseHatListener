@@ -17,13 +17,13 @@ body h1 {
 	padding: 20px;
 }
 
-canvas {
+#canvasDiv canvas {
 	position: absolute;
 	top: 20px;
 	left: 20px;
 }
 
-input[type="color"] {
+button.jscolor {
 	padding: 0px;
 	border: 0px;
 	background-color: #23272a;
@@ -31,6 +31,7 @@ input[type="color"] {
 	max-width: 15vw;
 	width: 10vh;
 	height: 15vw;
+	outline: 0px;
 }
 
 svg {
@@ -66,7 +67,7 @@ svg {
 	float: right;
 }
 
-#buttonDiv input, #buttonDiv svg{
+#buttonDiv button, #buttonDiv svg{
 	float: left;
 }
 

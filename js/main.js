@@ -151,7 +151,7 @@ function clearAll(){
 }
 
 function getColour(){
-	return document.getElementById("brush").value;
+	return "#"+document.getElementById("brushColor").value;
 }
 
 function paintTile(tile, xy){
@@ -159,7 +159,7 @@ function paintTile(tile, xy){
 	if(eraseMode){
 		tile.clearTile()
 		delete boardState[xy.y][xy.x];
-		historyUpdate(xy, "#FFFFFF");
+		historyUpdate(xy, "#000000");
 		return
 	}
 	tile.fillTile(fillStyle=colour)
