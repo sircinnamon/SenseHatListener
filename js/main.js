@@ -119,6 +119,7 @@ var boardState = [[],[],[],[],[],[],[],[]];
 var boardHistory = [];
 var boardHistoryStart = [[],[],[],[],[],[],[],[]];
 var eraseMode = false;
+var mode = getParameterByName("mode");
 
 function getMousePos(canvasGrid, event) {
 	var rect = canvasGrid.getBoundingClientRect();
@@ -146,7 +147,7 @@ function clearAll(){
 	board.clearTiles();
 	boardState = [[],[],[],[],[],[],[],[]];
 	boardHistory = [];
-	boardHistoryStart = [];
+	boardHistoryStart = [[],[],[],[],[],[],[],[]];
 }
 
 function getColour(){
@@ -167,6 +168,11 @@ function paintTile(tile, xy){
 }
 
 function historyUpdate(xy, colour){
+	// Dont push duplicate history entries (holding mouse produces many)
+	prev = boardHistory[boardHistory.length-1]
+	if(prev && prev.x == xy.x && prev.y == xy.y && prev.colour == colour){
+		return;
+	}
 	boardHistory.push({colour:colour, x:xy.x, y:xy.y})
 	while(boardHistory.length > 256){
 		var px = boardHistory.shift()
@@ -310,7 +316,7 @@ function set_erase_mode(val){
 	}
 }
 
-function submit(mode){
+function submit(){
 	var xhr = new XMLHttpRequest();
 	if ("withCredentials" in xhr) {
 		// Check if the XMLHttpRequest object has a "withCredentials" property.
@@ -336,8 +342,11 @@ function submit(mode){
 			}, 3000);
 		}
 	}
+	// Mode set via mode url param
 	if(mode=="history"){
 		xhr.send(JSON.stringify({start:format_board(boardHistoryStart),sequence:format_sequence(boardHistory)}));
+	} else if(mode=="string") {
+		xhr.send(JSON.stringify({string:getParameterByName("data")}));
 	} else {
 		xhr.send(JSON.stringify({board:format_board(boardState)}));
 	}
@@ -401,6 +410,15 @@ function secretCode(keycode){
 	}
 }
 
+function getParameterByName(name, url) {
+	if (!url) url = window.location.href;
+	name = name.replace(/[\[\]]/g, "\\$&");
+	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		results = regex.exec(url);
+	if (!results) return null;
+	if (!results[2]) return '';
+	return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
 
 first_load();
 
