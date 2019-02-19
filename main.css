@@ -32,6 +32,7 @@ button.jscolor {
 	width: 10vh;
 	height: 15vw;
 	outline: 0px;
+	user-select: none;
 }
 
 svg {
