@@ -61,6 +61,7 @@ svg {
 	min-width: 350px;
 	margin: auto;
 	margin-top: 2vh;
+	height: 10vh;
 }
 
 #buttonDiv div.right {
