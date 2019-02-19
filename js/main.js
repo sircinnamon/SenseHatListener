@@ -348,7 +348,7 @@ function submit(){
 	} else if(mode=="string") {
 		xhr.send(JSON.stringify({string:getParameterByName("data")}));
 	} else {
-		xhr.send(JSON.stringify({board:format_board(boardState)}));
+		xhr.send(JSON.stringify({map:format_board(boardState)}));
 	}
 }
 
