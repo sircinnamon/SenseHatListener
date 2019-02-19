@@ -348,7 +348,7 @@ function submit(){
 	} else if(mode=="string") {
 		xhr.send(JSON.stringify({string:getParameterByName("data")}));
 	} else {
-		xhr.send(JSON.stringify({board:format_board(boardState)}));
+		xhr.send(JSON.stringify({map:format_board(boardState)}));
 	}
 }
 
@@ -423,7 +423,7 @@ function getParameterByName(name, url) {
 first_load();
 
 window.addEventListener('mouseup', mouseup_global, {passive:false});
-window.addEventListener('mousedown', mousedown_global, {passive:false});
+document.querySelector('main').addEventListener('mousedown', mousedown_global, {passive:false});
 
 canvasGrid.addEventListener('mousedown', mousedown_func, {passive:false});
 canvasGrid.addEventListener('touchstart', touchstart_func, {passive:false});

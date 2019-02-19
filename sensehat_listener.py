@@ -25,8 +25,8 @@ def handle_post_body(body):
 def worker():
     while True:
         data = q.get()
-        if "board" in data:
-            if(len(data["board"])!=64):
+        if "map" in data:
+            if(len(data["map"])!=64):
                 return
             processGrid(data)
         elif "string" in data:
@@ -40,7 +40,7 @@ def worker():
         q.task_done()
 
 def processGrid(data):
-    sense.set_pixels(data["board"]);
+    sense.set_pixels(data["map"]);
     # Reset clear timer
     time.sleep(5)
     sense.clear()
@@ -53,14 +53,25 @@ def processString(data):
 def processSeq(data):
     if "start" in data and len(data["start"])==64:
         sense.set_pixels(data["start"]);
-    for pixel in data["sequence"]:
-        if "colour" not in pixel:
-            pixel["colour"] = (0,0,0)
-        if "x" not in pixel: pixel["x"] = 0
-        if "y" not in pixel: pixel["y"] = 0
-        sense.set_pixel(pixel["x"], pixel["y"], pixel["colour"])
-        time.sleep(0.1)
-    time.sleep(2)
+    for step in data["sequence"]:
+        if "pixels" in step:
+            for pixel in step["pixels"]:
+                if "colour" not in pixel:
+                    pixel["colour"] = (0,0,0)
+                if "x" not in pixel: pixel["x"] = 0
+                if "y" not in pixel: pixel["y"] = 0
+                sense.set_pixel(pixel["x"], pixel["y"], pixel["colour"])
+        elif "map" in step:
+            sense.set_pixels(step["map"])
+        else:
+            if "colour" not in step:
+                step["colour"] = (0,0,0)
+            if "x" not in step: step["x"] = 0
+            if "y" not in step: step["y"] = 0
+            sense.set_pixel(step["x"], step["y"], step["colour"])
+        delay = min(1, step["delay"]) if "delay" in step else 0.1
+        time.sleep(delay)
+    time.sleep(2) # Hold final state
     sense.clear()
     time.sleep(1)
 
