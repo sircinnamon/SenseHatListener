@@ -40,7 +40,7 @@ def worker():
         q.task_done()
 
 def processGrid(data):
-    sense.set_pixels(data["map"]);
+    sense.set_pixels(formatMap(data["map"]));
     # Reset clear timer
     time.sleep(5)
     sense.clear()
@@ -62,7 +62,7 @@ def processSeq(data):
                 if "y" not in pixel: pixel["y"] = 0
                 sense.set_pixel(pixel["x"], pixel["y"], pixel["colour"])
         elif "map" in step:
-            sense.set_pixels(step["map"])
+            sense.set_pixels(formatMap(step["map"]))
         else:
             if "colour" not in step:
                 step["colour"] = (0,0,0)
@@ -74,6 +74,35 @@ def processSeq(data):
     time.sleep(2) # Hold final state
     sense.clear()
     time.sleep(1)
+
+def formatMap(arr):
+    # Detect 2d array vs flat array
+    outmap = [[0,0,0]]*64
+    two_d = None
+    for index, i in enumerate(arr):
+        if(len(i)>0):
+            if isinstance(i[0],list):
+                # This is a 2d arr
+                if(two_d == False):return outmap;
+                two_d = True;
+                for innerindex, j in enumerate(i):
+                    if(len(j)>0):
+                        outmap[(8*index + innerindex)] = formatRGB(j)
+            else:
+                # Can't switch modes
+                if(two_d == True):return outmap;
+                two_d = False;
+                outmap[index] = formatRGB(i)
+    return outmap
+
+def formatRGB(rgb):
+    out = [0,0,0]
+    if(not isinstance(rgb, list)): return out
+    for i in range(min(len(rgb),3)):
+        if(not isinstance(rgb[i], int)):
+            continue
+        out[i] = min(max(rgb[i], 0),255)
+    return out
 
 class S(BaseHTTPRequestHandler):
     def _set_response(self):
