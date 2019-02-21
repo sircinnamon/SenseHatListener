@@ -218,6 +218,11 @@ function mousemove_func(evt) {
 		if(tile){
 			if(evt.ctrlKey){
 				copy_colour(evt);
+			} else if(evt.shiftKey) {
+				var eraseState = eraseMode;
+				eraseMode = true;
+				paintTile(board.getTileByCoord(mousePos.x, mousePos.y), board.getXYByCoord(mousePos.x, mousePos.y))
+				eraseMode = eraseState;
 			} else {
 				paintTile(board.getTileByCoord(mousePos.x, mousePos.y), board.getXYByCoord(mousePos.x, mousePos.y))
 			}
@@ -376,12 +381,15 @@ function submit(){
 
 function format_board(board){
 	output_board = [];
-	for (var i = 0; i < 8; i++) {
-		for (var j = 0; j < 8; j++) {
+	var filled_len = 7;
+	while(board[filled_len].length==0){filled_len--;}
+	for (var i = 0; i <= filled_len; i++) {
+		output_board[i]=[];
+		for (var j = 0; j < board[i].length; j++) {
 			if(!board[i][j]){
-				output_board[i*8 + j] = [0,0,0]
+				output_board[i][j] = []
 			} else {
-				output_board[i*8 + j] = hexToRgb(board[i][j])
+				output_board[i][j] = hexToRgb(board[i][j])
 			}
 		}
 	}
