@@ -149,6 +149,7 @@ function clearAll(){
 	boardState = [[],[],[],[],[],[],[],[]];
 	boardHistory = [];
 	boardHistoryStart = [[],[],[],[],[],[],[],[]];
+	frames = [];
 }
 
 function getColour(){
