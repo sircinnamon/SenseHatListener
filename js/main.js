@@ -186,6 +186,11 @@ function save_frame(){
 	frames.push({map: format_board(boardState)});
 }
 
+function copy_colour(evt){
+	var mousePos = getMousePos(canvasGrid, evt);
+	document.getElementById("brush").jscolor.fromString(board.getTileByCoord(mousePos.x, mousePos.y).currentFill)
+}
+
 function mousedown_global(evt) {
 	mousedown = true;
 }
@@ -209,7 +214,11 @@ function mousemove_func(evt) {
 		var mousePos = getMousePos(canvasGrid, evt);
 		var tile = board.getTileByCoord(mousePos.x, mousePos.y)
 		if(tile){
-			paintTile(board.getTileByCoord(mousePos.x, mousePos.y), board.getXYByCoord(mousePos.x, mousePos.y))
+			if(evt.ctrlKey){
+				copy_colour(evt);
+			} else {
+				paintTile(board.getTileByCoord(mousePos.x, mousePos.y), board.getXYByCoord(mousePos.x, mousePos.y))
+			}
 		}
 	}
 }
