@@ -183,6 +183,10 @@ function historyUpdate(xy, colour){
 }
 
 function save_frame(){
+	document.getElementById("frameTooltip").style.opacity = "1";
+	setTimeout(function(){
+		document.getElementById("frameTooltip").style.opacity = "0";
+	}, 1000);
 	frames.push({map: format_board(boardState)});
 }
 
@@ -382,7 +386,7 @@ function submit(){
 function format_board(board){
 	output_board = [];
 	var filled_len = 7;
-	while(board[filled_len].length==0){filled_len--;}
+	while(filled_len>=0 && board[filled_len].length==0){filled_len--;}
 	for (var i = 0; i <= filled_len; i++) {
 		output_board[i]=[];
 		for (var j = 0; j < board[i].length; j++) {

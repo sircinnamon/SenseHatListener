@@ -108,3 +108,11 @@ svg {
 	border-style: solid;
 	border-color: #43b581 transparent transparent transparent;
 }
+
+.submitDiv #frametooltip.tooltiptext {
+	background-color: #faa61a;
+}
+
+.submitDiv #frametooltip.tooltiptext::after {
+	border-color: #faa61a transparent transparent transparent;
+}
