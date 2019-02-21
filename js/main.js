@@ -118,6 +118,7 @@ var board;
 var boardState = [[],[],[],[],[],[],[],[]];
 var boardHistory = [];
 var boardHistoryStart = [[],[],[],[],[],[],[],[]];
+var frames = [];
 var eraseMode = false;
 var mode = getParameterByName("mode");
 
@@ -178,6 +179,10 @@ function historyUpdate(xy, colour){
 		var px = boardHistory.shift()
 		boardHistoryStart[px.y][px.x] = px.colour;
 	}
+}
+
+function save_frame(){
+	frames.push({map: format_board(boardState)});
 }
 
 function mousedown_global(evt) {
@@ -271,6 +276,9 @@ function resize_func(evt) {
 }
 
 function keydown_func(evt){
+	if(evt.keyCode==83){ // key = s
+		save_frame();
+	}
 	var codeComplete = secretCode(evt.keyCode)
 	if (codeComplete){
 		console.log("Sequence Complete!");
@@ -347,6 +355,8 @@ function submit(){
 		xhr.send(JSON.stringify({start:format_board(boardHistoryStart),sequence:format_sequence(boardHistory)}));
 	} else if(mode=="string") {
 		xhr.send(JSON.stringify({string:getParameterByName("data")}));
+	} else if(mode=="frames") {
+		xhr.send(JSON.stringify({sequence:frames}));
 	} else {
 		xhr.send(JSON.stringify({map:format_board(boardState)}));
 	}
