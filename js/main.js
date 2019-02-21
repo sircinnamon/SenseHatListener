@@ -188,7 +188,9 @@ function save_frame(){
 
 function copy_colour(evt){
 	var mousePos = getMousePos(canvasGrid, evt);
-	document.getElementById("brush").jscolor.fromString(board.getTileByCoord(mousePos.x, mousePos.y).currentFill)
+	var fill = board.getTileByCoord(mousePos.x, mousePos.y).currentFill
+	if(fill==null){return;}
+	document.getElementById("brush").jscolor.fromString(fill)
 }
 
 function mousedown_global(evt) {
