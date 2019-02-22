@@ -6,6 +6,7 @@ from sense_hat import SenseHat
 import json
 from threading import Timer, Thread
 from Queue import Queue
+from copy import deepcopy
 import time
 
 sense = SenseHat()
@@ -13,6 +14,16 @@ sense.set_rotation(270)
 t = Timer(5.0, sense.clear)
 q = Queue()
 defaultScreen = [[0,0,0]]*64
+
+DELAY_BETWEEN_HANDLERS = 1
+MAP_PAUSE = 5
+SEQ_FINAL_PAUSE =2
+DEFAULT_SEQ_DELAY = 0.1
+DEFAULT_FLASH_ONTIME = 0.5
+DEFAULT_FLASH_OFFTIME = 0.5
+DEFAULT_FLASH_LOOPS = 10
+DEFAULT_SCROLL_SPEED = 0.2
+DEFAULT_SCROLL_DIRECTION=6
 
 def handle_post_body(body):
     global t
@@ -36,16 +47,21 @@ def worker():
             processSeq(data)
         elif "default" in data:
             processDefault(data)
+        elif "flash" in data:
+            processFlash(data)
+        elif "scroll" in data:
+            processScroll(data)
+        elif "spin" in data:
+            processSpin(data)
         sense.set_pixels(defaultScreen)
         q.task_done()
 
 def processGrid(data):
     # Take a map and output to LEDs
     sense.set_pixels(formatMap(data["map"]))
-    # Reset clear timer
-    time.sleep(5)
+    time.sleep(MAP_PAUSE)
     sense.clear()
-    time.sleep(1)
+    time.sleep(DELAY_BETWEEN_HANDLERS)
 
 def processString(data):
     # Take a string and print across LEDs
@@ -72,11 +88,11 @@ def processSeq(data):
             if "x" not in step: step["x"] = 0
             if "y" not in step: step["y"] = 0
             sense.set_pixel(step["x"], step["y"], step["colour"])
-        delay = min(1, step["delay"]) if "delay" in step else 0.1
+        delay = min(1, step["delay"]) if "delay" in step else DEFAULT_SEQ_DELAY
         time.sleep(delay)
-    time.sleep(2) # Hold final state
+    time.sleep(SEQ_FINAL_PAUSE) # Hold final state
     sense.clear()
-    time.sleep(1)
+    time.sleep(DELAY_BETWEEN_HANDLERS)
 
 def processDefault(data):
     # Take a Pixel, set of Pixels or Map and copy into the default screen state
@@ -97,6 +113,49 @@ def processDefault(data):
         if "x" not in data["default"]: data["default"]["x"] = 0
         if "y" not in data["default"]: data["default"]["y"] = 0
         defaultScreen[data["default"]["y"]*8+data["default"]["x"]] = data["default"]["colour"]
+
+def processFlash(data):
+    # Take a Map and flash according to given delays
+    inmap = data["flash"]
+    ontime = data["ontime"] if "ontime" in data else DEFAULT_FLASH_ONTIME
+    offtime = data["offtime"] if "offtime" in data else DEFAULT_FLASH_OFFTIME
+    loops = data["loops"] if "loops" in data else DEFAULT_FLASH_LOOPS
+    onstep = {"map":inmap,"delay":ontime};
+    offstep = {"map":[],"delay":offtime};
+    sequence = [onstep,offstep]*loops
+    processSeq({"sequence":sequence})
+
+def processScroll(data):
+    # Take a Map and scroll according to given speed and direction
+    # Shifts are clockwise from 12, xy
+    shifts = [(0,-1),(1,-1),(1,0),(1,1),(0,1),(-1,1),(-1,0),(-1,-1)]
+    inmap = make2d(formatMap(data["scroll"]))
+    direction = data["direction"] if "direction" in data else DEFAULT_SCROLL_DIRECTION
+    shift = shifts[direction]
+    speed = data["speed"] if "speed" in data else DEFAULT_SCROLL_SPEED
+    midstep = {"map":inmap,"delay":speed}
+    sequence = [midstep];
+    for i in range(8):
+        beforeStep = shiftMap(seq[0]["map"],-shift[0],-shift[1])
+        afterStep = shiftMap(seq[-1]["map"],shift[0],shift[1])
+        sequence = [{"map":beforeStep,"delay":speed}] + sequence + [{"map":afterStep,"delay":speed}]
+    processSeq({"sequence":sequence})
+
+def processSpin(data):
+    # Take a Map and rotate 90 degrees on a given time and amount of loops
+    inmap = make2d(formatMap(data["spin"]))
+    delay = data["delay"] if "delay" in data else DEFAULT_ROTATE_DELAY
+    loops = data["loops"] if "loops" in data else DEFAULT_ROTATE_LOOPS
+    steps = [
+        {"map":inmap,"delay":delay},
+        {"map":rotateMap(inmap,90),"delay":delay},
+        {"map":rotateMap(inmap,180),"delay":delay},
+        {"map":rotateMap(inmap,270),"delay":delay},
+    ]
+    if "counterclockwise" in data and data["counterclockwise"].lower()=="true":
+        steps = steps[0]+steps[1:][::-1]
+    sequence = steps*loops
+    processSeq({"sequence":sequence})
 
 def formatMap(arr):
     # Parse an array with omitted default values (rows or black values)
@@ -127,6 +186,59 @@ def formatRGB(rgb):
             continue
         out[i] = min(max(rgb[i], 0),255)
     return out
+
+def make2d(arr):
+    # Make 64 len array an 8x8
+    outarr = []
+    for i in range(8):
+        outarr.append([])
+        for j in range(8):
+            outarr[i].append([])
+            outarr[i][j] = arr[8*i+j];
+    return outarr;
+
+def shiftMap(m, x, y):
+    # Shift 8x8 arr by given x and y filling w/ 0s
+    newmap = deepcopy(m)
+    if abs(y)>0:
+        shiftarr(newmap, y, [])
+    if abs(x)>0:
+        for i in range(len(newmap)):
+            newmap[i] = shiftArr(newmap[i], x, [])
+    return newmap
+
+def shiftArr(a, i, fill):
+    #Shift arr a right by given i
+    newlist = list(a)
+    amp = abs(i)
+    if(amp >= len(a)):return [fill]*len(a)
+    if(i>0):
+        newlist = [fill]*i + newlist[:-i]
+    else:
+        newlist = newlist[-(len(a)+i):] + [fill]*amp
+    return newlist
+
+def rotateMap(m, deg):
+    deg = deg%360;
+    if deg%90!=0:
+        deg = deg - (deg%90)
+    if(deg==0):return m
+    newmap = deepcopy(m)
+    if(deg==180):
+        for i in range(8):
+            newmap[i]=newmap[i][::-1]
+        newmap = newmap[::-1]
+        return newmap
+    if(deg==90):
+        for i in range(8):
+            for j in range(8):
+                newmap[i][j] = m[8-j][i]
+    if(deg==270):
+        for i in range(8):
+            for j in range(8):
+                newmap[i][j] = m[j][8-i]
+    return newmap
+
 
 class S(BaseHTTPRequestHandler):
     def _set_response(self):
