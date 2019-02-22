@@ -1,9 +1,5 @@
 #!/usr/bin/env python
-"""
-Very simple HTTP server in python for logging requests
-Usage::
-    ./server.py [<port>]
-"""
+
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import logging
 from sense_hat import SenseHat
@@ -15,7 +11,8 @@ import time
 sense = SenseHat()
 sense.set_rotation(270)
 t = Timer(5.0, sense.clear)
-q = Queue();
+q = Queue()
+defaultScreen = [[0,0,0]]*64
 
 def handle_post_body(body):
     global t
@@ -32,27 +29,33 @@ def worker():
         elif "string" in data:
             if(len(data["string"])>32):
                 data["string"] = data["string"][:32]
-            processString(data);
+            processString(data)
         elif "sequence" in data:
             if(len(data["sequence"])>256):
                 data["sequence"] = data["sequence"][:256]
-            processSeq(data);
+            processSeq(data)
+        elif "default" in data:
+            processDefault(data)
+        sense.set_pixels(defaultScreen)
         q.task_done()
 
 def processGrid(data):
-    sense.set_pixels(formatMap(data["map"]));
+    # Take a map and output to LEDs
+    sense.set_pixels(formatMap(data["map"]))
     # Reset clear timer
     time.sleep(5)
     sense.clear()
     time.sleep(1)
 
 def processString(data):
+    # Take a string and print across LEDs
     sense.show_message(data["string"])
     time.sleep(1+len(data["string"])*0.1)
 
 def processSeq(data):
+    # Take a start state and sequence of Pixels or Maps, and play using given delays
     if "start" in data and len(data["start"])==64:
-        sense.set_pixels(data["start"]);
+        sense.set_pixels(data["start"])
     for step in data["sequence"]:
         if "pixels" in step:
             for pixel in step["pixels"]:
@@ -75,7 +78,28 @@ def processSeq(data):
     sense.clear()
     time.sleep(1)
 
+def processDefault(data):
+    # Take a Pixel, set of Pixels or Map and copy into the default screen state
+    # Default screen state shows when no other events are being handled
+    # Default screen will last until changed
+    if "pixels" in data["default"]:
+        for pixel in data["default"]["pixels"]:
+            if "colour" not in pixel:
+                pixel["colour"] = (0,0,0)
+            if "x" not in pixel: pixel["x"] = 0
+            if "y" not in pixel: pixel["y"] = 0
+            defaultScreen[pixel["y"]*8+pixel["x"]] = pixel["colour"]
+    elif "map" in data["default"]:
+        defaultScreen = formatMap(data["default"]["map"])
+    else:
+        if "colour" not in data["default"]:
+            data["default"]["colour"] = (0,0,0)
+        if "x" not in data["default"]: data["default"]["x"] = 0
+        if "y" not in data["default"]: data["default"]["y"] = 0
+        defaultScreen[data["default"]["y"]*8+data["default"]["x"]] = data["default"]["colour"]
+
 def formatMap(arr):
+    # Parse an array with omitted default values (rows or black values)
     # Detect 2d array vs flat array
     outmap = [[0,0,0]]*64
     two_d = None
@@ -83,15 +107,15 @@ def formatMap(arr):
         if(len(i)>0):
             if isinstance(i[0],list):
                 # This is a 2d arr
-                if(two_d == False):return outmap;
-                two_d = True;
+                if(two_d == False):return outmap
+                two_d = True
                 for innerindex, j in enumerate(i):
                     if(len(j)>0):
                         outmap[(8*index + innerindex)] = formatRGB(j)
             else:
                 # Can't switch modes
-                if(two_d == True):return outmap;
-                two_d = False;
+                if(two_d == True):return outmap
+                two_d = False
                 outmap[index] = formatRGB(i)
     return outmap
 
