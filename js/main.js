@@ -378,6 +378,12 @@ function submit(){
 		xhr.send(JSON.stringify({string:getParameterByName("data")}));
 	} else if(mode=="frames") {
 		xhr.send(JSON.stringify({sequence:frames}));
+	} else if(mode=="flash") {
+		xhr.send(JSON.stringify({flash:format_board(boardState)}));
+	} else if(mode=="spin") {
+		xhr.send(JSON.stringify({spin:format_board(boardState)}));
+	} else if(mode=="scroll") {
+		xhr.send(JSON.stringify({scroll:format_board(boardState)}));
 	} else {
 		xhr.send(JSON.stringify({map:format_board(boardState)}));
 	}
