@@ -24,6 +24,8 @@ DEFAULT_FLASH_OFFTIME = 0.5
 DEFAULT_FLASH_LOOPS = 10
 DEFAULT_SCROLL_SPEED = 0.2
 DEFAULT_SCROLL_DIRECTION=6
+DEFAULT_ROTATE_DELAY=0.3
+DEFAULT_ROTATE_LOOPS=4
 
 def handle_post_body(body):
     global t
@@ -136,8 +138,8 @@ def processScroll(data):
     midstep = {"map":inmap,"delay":speed}
     sequence = [midstep];
     for i in range(8):
-        beforeStep = shiftMap(seq[0]["map"],-shift[0],-shift[1])
-        afterStep = shiftMap(seq[-1]["map"],shift[0],shift[1])
+        beforeStep = shiftMap(sequence[0]["map"],-shift[0],-shift[1])
+        afterStep = shiftMap(sequence[-1]["map"],shift[0],shift[1])
         sequence = [{"map":beforeStep,"delay":speed}] + sequence + [{"map":afterStep,"delay":speed}]
     processSeq({"sequence":sequence})
 
@@ -153,7 +155,7 @@ def processSpin(data):
         {"map":rotateMap(inmap,270),"delay":delay},
     ]
     if "counterclockwise" in data and data["counterclockwise"].lower()=="true":
-        steps = steps[0]+steps[1:][::-1]
+        steps = [steps[0]]+steps[1:][::-1]
     sequence = steps*loops
     processSeq({"sequence":sequence})
 
@@ -232,11 +234,11 @@ def rotateMap(m, deg):
     if(deg==90):
         for i in range(8):
             for j in range(8):
-                newmap[i][j] = m[8-j][i]
+                newmap[i][j] = m[7-j][i]
     if(deg==270):
         for i in range(8):
             for j in range(8):
-                newmap[i][j] = m[j][8-i]
+                newmap[i][j] = m[j][7-i]
     return newmap
 
 
