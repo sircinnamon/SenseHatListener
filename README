@@ -1,4 +1,4 @@
 # SenseHat Message Poster
 
 * Try to find alternative to --priveliged (--device?)
-* Figure out how to access SenseHat in a container
+* Implement Auth options
