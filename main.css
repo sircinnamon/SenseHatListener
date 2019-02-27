@@ -116,3 +116,27 @@ svg {
 .submitDiv #frametooltip.tooltiptext::after {
 	border-color: #faa61a transparent transparent transparent;
 }
+
+#sidebarDiv {
+	display: none;
+	min-width: 91px;
+	width: 8vw;
+	height: 100vh;
+	background: #2C2F33;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	border-right: 3px solid  #7289DA;
+	z-index: 10;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+#sidebarDiv canvas {
+	width: 71px;
+	height: 71px;
+	background: #23272A;
+	border: 1px solid #99AAB5;
+	z-index: 11;
+	margin: 5px auto 0px auto;
+}

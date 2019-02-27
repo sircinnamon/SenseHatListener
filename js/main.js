@@ -54,6 +54,10 @@ function clearAll(){
 	boardHistory = [];
 	boardHistoryStart = [[],[],[],[],[],[],[],[]];
 	frames = [];
+	var sidebar = document.getElementById("sidebarDiv");
+	while (sidebar.firstChild) {
+	    sidebar.removeChild(sidebar.firstChild);
+	}
 }
 
 function getColour(){
@@ -92,6 +96,10 @@ function save_frame(){
 		document.getElementById("frameTooltip").style.opacity = "0";
 	}, 1000);
 	frames.push({map: format_board(boardState)});
+	var frame = new Frame(boardState);
+	document.getElementById("sidebarDiv").appendChild(frame.canvas_element("frame-preview-"+(frames.length-1)));
+	frame.display(document.getElementById("frame-preview-"+(frames.length-1)));
+	document.getElementById("sidebarDiv").style.display = "block"
 }
 
 function copy_colour(evt){
@@ -201,7 +209,7 @@ function resize_func(evt) {
 }
 
 function keydown_func(evt){
-	if(evt.keyCode==83){ // key = s
+	if(evt.keyCode==83 && mode=="frames"){ // key = s
 		save_frame();
 	}
 	var codeComplete = secretCode(evt.keyCode)
