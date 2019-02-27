@@ -102,6 +102,13 @@ function save_frame(){
 	document.getElementById("sidebarDiv").style.display = "block"
 }
 
+function pop_frame(){
+	var frame = frames.length-1;
+	var sidebar = document.getElementById("sidebarDiv");
+	sidebar.removeChild(sidebar.lastElementChild);
+	frames.pop()
+}
+
 function copy_colour(evt){
 	var mousePos = getMousePos(canvasGrid, evt);
 	var fill = board.getTileByCoord(mousePos.x, mousePos.y).currentFill
@@ -210,7 +217,11 @@ function resize_func(evt) {
 
 function keydown_func(evt){
 	if(evt.keyCode==83 && mode=="frames"){ // key = s
-		save_frame();
+		if(evt.shiftKey){
+			pop_frame();
+		} else {
+			save_frame();
+		}
 	}
 	var codeComplete = secretCode(evt.keyCode)
 	if (codeComplete){
