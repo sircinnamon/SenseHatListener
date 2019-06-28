@@ -36,8 +36,6 @@ def worker():
     while True:
         data = q.get()
         if "map" in data:
-            if(len(data["map"])!=64):
-                return
             processGrid(data)
         elif "string" in data:
             if(len(data["string"])>32):
