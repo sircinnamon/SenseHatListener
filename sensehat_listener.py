@@ -67,6 +67,15 @@ def processGrid(data):
 
 def processString(data):
     # Take a string and print across LEDs
+    text_colour=[255,255,255]
+    if("colour" in data):
+        text_colour=data["colour"]
+    back_colour=[0,0,0]
+    if("background" in data):
+        back_colour=data["background"]
+    scroll_speed=0.1
+    if("speed" in data):
+        scroll_speed=min(data["speed"], 1)
     sense.show_message(data["string"])
     time.sleep(1+len(data["string"])*0.1)
 
