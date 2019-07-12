@@ -6,7 +6,7 @@ PYTHON_IP=172.10.10.3
 
 NETWORK_NAME=sensehat
 
-PYTHON_HOSTNAME=pythonpost
+PYTHON_HOSTNAME=python
 
 NGINX_CONTAINER=sh-nginx
 PYTHON_CONTAINER=sh-python
@@ -29,7 +29,7 @@ docker run -d \
 docker rm $NGINX_CONTAINER
 docker run -d \
 	-v $(pwd)/nginx.conf:/etc/nginx/nginx.conf \
-	-v $(pwd):/var/www/html/ \
+	-v $(pwd)/webroot:/var/www/html \
 	-v /etc/localtime:/etc/localtime:ro \
 	--name $NGINX_CONTAINER \
 	--add-host=$PYTHON_HOSTNAME:$PYTHON_IP \

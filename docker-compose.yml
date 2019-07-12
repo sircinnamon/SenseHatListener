@@ -1,0 +1,20 @@
+version: '1'
+services:
+	nginx:
+		image: "nginx:1.14.0"
+		ports:
+			- "8080:8080"
+		volumes:
+			- nginx.conf:/etc/nginx/nginx.conf
+			- webroot:/var/www/html
+			- /etc/localtime:/etc/localtime:ro
+	python:
+		image: "sensehat:latest"
+		entrypoint:
+			- python
+			- /sensehat_listener.py
+			- 80
+		privileged: true
+		volumes:
+			- sensehat_listener.py:/sensehat_listener.py
+			- /etc/localtime:/etc/localtime:ro
