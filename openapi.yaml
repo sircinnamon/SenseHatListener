@@ -1,0 +1,361 @@
+openapi: "3.0.0"
+info:
+  title: "SenseHat Listener"
+  description: "This API allows remote or local applications to easily manage the output of the SenseHat 8x8 LED display in a structured way."
+  version: "1.0.0"
+  termsOfService: "https://github.com/sircinnamon/SenseHatListener/blob/master/README.md"
+  contact:
+    name: "Riley Lahd"
+    email: "sircinnamon@gmail.com"
+    url: "https://github.com/sircinnamon"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+# basePath: "/api"
+# schemes:
+# - "http"
+# consumes:
+# - "application/json"
+paths:
+  /string:
+    post:
+      summary: "Input a string to scroll across the grid"
+      description: "Input text will scroll across the screen from right to left. Speed, text colour and backing colour are configurable."
+      operationId: "postString"
+      requestBody:
+        description: "JSON containing the data and options"
+        required: True
+        content:
+          application/json:
+            schema: 
+              $ref: "#/components/schemas/stringSchema"
+      responses:
+        200:
+          description: "Body recieved and queued for display"
+        400:
+          description: "Request was malformed"
+        401:
+          description: "User is not authenticated"
+  /map:
+    post:
+      summary: "Input an 8x8 Map to display on the grid"
+      description: "8x8 Map of RGB values will be displayed on the 8x8 LED Grid"
+      operationId: "postMap"
+      requestBody:
+        description: "JSON containing the data and options"
+        required: True
+        content:
+          application/json:
+            schema: 
+              $ref: "#/components/schemas/mapSchema"
+      responses:
+        200:
+          description: "Body recieved and queued for display"
+        400:
+          description: "Request was malformed"
+        401:
+          description: "User is not authenticated"
+  /sequence:
+    post:
+      summary: "Input a start state and set of steps to display in sequence"
+      description: "Starting with start state on screen each step will be read and displayed. Steps can be whole maps, lists of specific pixels, or a single pixel."
+      operationId: "postSequence"
+      requestBody:
+        description: "JSON containing the data and options"
+        required: True
+        content:
+          application/json:
+            schema: 
+              $ref: "#/components/schemas/sequenceSchema"
+      responses:
+        200:
+          description: "Body recieved and queued for display"
+        400:
+          description: "Request was malformed"
+        401:
+          description: "User is not authenticated"
+  /passive:
+    post:
+      summary: "Input a passive state for the board to display when no other actions are queued"
+      description: "Set a passive state for the board or for individual pixels. This can be used for 'always on' status lights or other persistent uses."
+      operationId: "postPassive"
+      requestBody:
+        description: "JSON containing the data and options"
+        required: True
+        content:
+          application/json:
+            schema: 
+              $ref: "#/components/schemas/passiveSchema"
+      responses:
+        200:
+          description: "Body recieved and queued for display"
+        400:
+          description: "Request was malformed"
+        401:
+          description: "User is not authenticated"
+  /flash:
+
+    post:
+      summary: "Input an 8x8 Map to flash on the LED grid"
+      description: "As with the Map endpoint, but this will flash on and off at a configurable interval"
+      operationId: "postFlash"
+      requestBody:
+        description: "JSON containing the data and options"
+        required: True
+        content:
+          application/json:
+            schema: 
+              $ref: "#/components/schemas/flashSchema"
+      responses:
+        200:
+          description: "Body recieved and queued for display"
+        400:
+          description: "Request was malformed"
+        401:
+          description: "User is not authenticated"
+  /scroll:
+
+    post:
+      summary: "Input an 8x8 Map to scroll across the LED grid"
+      description: "As with the Map endpoint, but this will scroll across the grid in a given direction"
+      operationId: "postScroll"
+      requestBody:
+        description: "JSON containing the data and options"
+        required: True
+        content:
+          application/json:
+            schema: 
+              $ref: "#/components/schemas/scrollSchema"
+      responses:
+        200:
+          description: "Body recieved and queued for display"
+        400:
+          description: "Request was malformed"
+        401:
+          description: "User is not authenticated"
+  /spin:
+    post:
+      summary: "Input an 8x8 Map to scroll across the LED grid"
+      description: "As with the Map endpoint, but this will scroll across the grid in a given direction"
+      operationId: "postSpin"
+      requestBody:
+        description: "JSON containing the data and options"
+        required: True
+        content:
+          application/json:
+            schema: 
+              $ref: "#/components/schemas/spinSchema"
+      responses:
+        200:
+          description: "Body recieved and queued for display"
+        400:
+          description: "Request was malformed"
+        401:
+          description: "User is not authenticated"
+components:
+  schemas:
+    stringSchema:
+      title: "stringSchema"
+      description: "Post object for string display"
+      type: "object"
+      example:
+        string: "Hello World!"
+      properties:
+        string:
+          description: "String to display"
+          type: "string"
+          minLength: 1
+          maxLength: 32
+        colour:
+          $ref: "#/components/schemas/RGB"
+        background:
+          $ref: "#/components/schemas/RGB"
+        speed:
+          description: "Seconds to wait between 1-pixel shift"
+          type: "number"
+          minimum: 0.01
+          maximum: 1
+          default: 0.1
+          example: 0.1
+          format: "float"
+      required:
+      - "string"
+    mapSchema:
+      title: "mapSchema"
+      description: "Object containing 1 8x8 Map to display, as 2d (8x8) or 1d (64) array."
+      type: "object"
+      example: >
+        {
+          map: [
+            [[255,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,255,0]]
+            [[255,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,255,0]]
+            [[255,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,255,0]]
+            [[255,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,255,0]]
+            [[255,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,255,0]]
+            [[255,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,255,0]]
+            [[255,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,255,0]]
+            [[255,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,255,0]]
+          ]
+        }
+      required:
+      - "map"
+      properties:
+        map:
+          $ref: "#/components/schemas/2dmap"
+    sequenceSchema:
+      title: "sequenceSchema"
+      description: "Object containing a start state and a sequence of steps representing board states to animate through at given timing."
+      type: "object"
+      properties:
+        start:
+          $ref: "#/components/schemas/2dmap"
+        sequence:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/sequenceStep"
+    sequenceStep:
+      title:  "sequenceStep"
+      description: "Object describing the difference between two map states. Provide one of [ pixels | map | pixel ]"
+      type: "object"
+      minProperties: 1
+      maxProperties: 2
+      properties:
+        pixels:
+          description: "An array of colours and XY coords corresponding to single pixel changes"
+          type: "array"
+          maxItems: 64
+          minItems: 2
+          items:
+            $ref: "#/components/schemas/pixel"
+        map:
+          $ref: "#/components/schemas/2dmap"
+        pixel:
+          $ref: "#/components/schemas/pixel"
+        delay:
+          type: "number"
+          format: "float"
+          description: "Time (in seconds) to hold the frame"
+          minimum: 0
+          maximum: 1
+          
+    passiveSchema:
+      title:  "passiveSchema"
+      description: "Object describing an update to the passive state of the grid. Provide one of [ pixels | map | pixel ]"
+      type: "object"
+      minProperties: 1
+      maxProperties: 1
+      properties:
+        pixels:
+          description: "An array of colours and XY coords corresponding to single pixel changes"
+          type: "array"
+          maxItems: 64
+          minItems: 2
+          items:
+            $ref: "#/components/schemas/pixel"
+        map:
+          $ref: "#/components/schemas/2dmap"
+        pixel:
+          $ref: "#/components/schemas/pixel"
+    flashSchema:
+      title:  "flashSchema"
+      description: "Object containing 1 8x8 Map to flash on the LED grid"
+      type: "object"
+      required:
+      - "map"
+      properties:
+        map:
+          $ref: "#/components/schemas/2dmap"
+        ontime:
+          type: "number"
+          format: "float"
+          description: "Time (in seconds) to hold the state on"
+          minimum: 0
+          maximum: 1
+        offtime:
+          type: "number"
+          format: "float"
+          description: "Time (in seconds) to hold the state off"
+          minimum: 0
+          maximum: 1
+        loops:
+          type: "integer"
+    scrollSchema:
+      title:  "scrollSchema"
+      description: "Object containing 1 8x8 Map to scroll across the LED grid"
+      type: "object"
+      required:
+      - "map"
+      properties:
+        map:
+          $ref: "#/components/schemas/2dmap"
+        direction:
+          description: "Representing the direction with 4 cardinals and 4 diagonals. 0 is UP, 4 is DOWN, 7 is UP+LEFT, etc..."
+          type: "integer"
+          minimum: 0
+          maximum: 7
+        speed:
+          type: "number"
+          format: "float"
+          description: "Time (in seconds) to hold each frame of the scroll"
+          minimum: 0
+          maximum: 1
+    spinSchema:
+      title:  "spinSchema"
+      description: "Object containing 1 8x8 Map to rotate on the LED grid"
+      type: "object"
+      required:
+      - "map"
+      properties:
+        map:
+          $ref: "#/components/schemas/2dmap"
+        counterclockwise:
+          type: "boolean"
+        loops:
+          type: "integer"
+        delay:
+          type: "number"
+          format: "float"
+          description: "Time (in seconds) to hold each frame of the scroll"
+          minimum: 0
+          maximum: 1
+        
+    RGB:
+      description: "An RGB colour value. Missing values are assumed to be zeros, i.e. [] = [0,0,0], [0, 255] = [0,255,0]"
+      type: "array"
+      example: [0,0,0]
+      items:
+        type: "integer"
+        maximum: 255
+        minimum: 0
+      maxItems: 3
+      minItems: 0
+    2dmap:
+      description: "2-Dimensional (8x8) array of RGB values representing the whole grid. Trailing black pixels or rows can be omitted. Blank rows can be shortened to an empty array."
+      type: "array"
+      minItems: 0
+      maxItems: 8
+      items:
+        type: "array"
+        minItems: 0
+        maxItems: 8
+        items:
+          $ref: "#/components/schemas/RGB"
+    pixel:
+      description: "Represents a pixel's state with its XY coord and RGB colour"
+      type: "object"
+      required:
+      - "colour"
+      - "x"
+      - "y"
+      properties:
+        colour:
+          $ref: "#/components/schemas/RGB"
+        x:
+          type: "integer"
+          minimum: 0
+          maximum: 7
+        y:
+          type: "integer"
+          minimum: 0
+          maximum: 7
+    
