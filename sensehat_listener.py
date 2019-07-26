@@ -8,12 +8,15 @@ from threading import Timer, Thread
 from Queue import Queue
 from copy import deepcopy
 import time
+from flask import Flask, request
 
 sense = SenseHat()
 sense.set_rotation(270)
 t = Timer(5.0, sense.clear)
 q = Queue()
 defaultScreen = [[0,0,0]]*64
+
+app = Flask(__name__)
 
 DELAY_BETWEEN_HANDLERS = 1
 MAP_PAUSE = 5
@@ -26,11 +29,6 @@ DEFAULT_SCROLL_SPEED = 0.2
 DEFAULT_SCROLL_DIRECTION=6
 DEFAULT_ROTATE_DELAY=0.3
 DEFAULT_ROTATE_LOOPS=4
-
-def handle_post_body(body):
-    global t
-    data = json.loads(body)
-    q.put(data)
 
 def worker():
     while True:
@@ -249,38 +247,10 @@ def rotateMap(m, deg):
     return newmap
 
 
-class S(BaseHTTPRequestHandler):
-    def _set_response(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
-
-    def do_GET(self):
-        logging.info("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
-        self._set_response()
-        self.wfile.write("GET request for {}".format(self.path).encode('utf-8'))
-
-    def do_POST(self):
-        content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
-        post_data = self.rfile.read(content_length) # <--- Gets the data itself
-        logging.info("POST request,\nPath: %s\nHeaders:\n%s\n",str(self.path), str(self.headers))
-        logging.debug("POST Body:\n%s\n", post_data.decode('utf-8'))
-        handle_post_body(post_data.decode('utf-8'))
-
-        self._set_response()
-        self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
-
-def run(server_class=HTTPServer, handler_class=S, port=8080):
-    logging.basicConfig(level=logging.INFO)
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    logging.info('Starting httpd...\n')
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        pass
-    httpd.server_close()
-    logging.info('Stopping httpd...\n')
+@app.route('/', methods=['POST'])
+def do_POST():
+    post_data = request.data # <--- Gets the data itself
+    q.put(request.data)
 
 if __name__ == '__main__':
     from sys import argv
@@ -288,6 +258,6 @@ if __name__ == '__main__':
     t.daemon = True
     t.start()
     if len(argv) == 2:
-        run(port=int(argv[1]))
+        app.run(host='0.0.0.0', port=int(argv[1]))
     else:
-        run()
+        app.run(host='0.0.0.0')
