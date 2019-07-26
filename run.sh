@@ -30,6 +30,7 @@ docker rm $NGINX_CONTAINER
 docker run -d \
 	-v $(pwd)/nginx.conf:/etc/nginx/nginx.conf \
 	-v $(pwd)/webroot:/var/www/html \
+	-v $(pwd)/openapi.yaml:/var/www/html/openapi.yaml \
 	-v /etc/localtime:/etc/localtime:ro \
 	--name $NGINX_CONTAINER \
 	--add-host=$PYTHON_HOSTNAME:$PYTHON_IP \
