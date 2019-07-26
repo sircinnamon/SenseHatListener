@@ -177,7 +177,7 @@ def processSpin(data):
         {"map":rotateMap(inmap,180),"delay":delay},
         {"map":rotateMap(inmap,270),"delay":delay},
     ]
-    if "counterclockwise" in data and data["counterclockwise"].lower()=="true":
+    if "counterclockwise" in data and data["counterclockwise"]:
         steps = [steps[0]]+steps[1:][::-1]
     sequence = steps*loops
     processSeq({"sequence":sequence})
@@ -269,7 +269,13 @@ class S(BaseHTTPRequestHandler):
     def _set_response(self):
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type, api_key, Authorization')
         self.end_headers()
+    
+    def do_OPTIONS(self):
+        self._set_response()
 
     def do_GET(self):
         logging.info("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
