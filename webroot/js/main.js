@@ -270,15 +270,38 @@ function set_erase_mode(val){
 
 function submit(){
 	var xhr = new XMLHttpRequest();
+	// Mode set via mode url param
+	if(mode=="history"){
+		url = "/api/sequence"
+		data = (JSON.stringify({start:format_board(boardHistoryStart),sequence:format_sequence(boardHistory)}));
+	} else if(mode=="string") {
+		url = "/api/string"
+		data = (JSON.stringify({string:getParameterByName("data")}));
+	} else if(mode=="frames") {
+		url = "/api/sequence"
+		data = (JSON.stringify({sequence:frames}));
+	} else if(mode=="flash") {
+		url = "/api/flash"
+		data = (JSON.stringify({map:format_board(boardState)}));
+	} else if(mode=="spin") {
+		url = "/api/spin"
+		data = (JSON.stringify({map:format_board(boardState)}));
+	} else if(mode=="scroll") {
+		url = "/api/scroll"
+		data = (JSON.stringify({map:format_board(boardState)}));
+	} else {
+		url = "/api/map"
+		data = (JSON.stringify({map:format_board(boardState)}));
+	}
 	if ("withCredentials" in xhr) {
 		// Check if the XMLHttpRequest object has a "withCredentials" property.
 		// "withCredentials" only exists on XMLHTTPRequest2 objects.
-		xhr.open("POST", "/post/", true);
+		xhr.open("POST", url, true);
 	} else if (typeof XDomainRequest != "undefined") {
 		// Otherwise, check if XDomainRequest.
 		// XDomainRequest only exists in IE, and is IE's way of making CORS requests.
 		xhr = new XDomainRequest();
-		xhr.open("POST", "/post/", true);
+		xhr.open("POST", url, true);
 	} else {
 		return;
 		console.log("Not supported")
@@ -294,22 +317,7 @@ function submit(){
 			}, 3000);
 		}
 	}
-	// Mode set via mode url param
-	if(mode=="history"){
-		xhr.send(JSON.stringify({start:format_board(boardHistoryStart),sequence:format_sequence(boardHistory)}));
-	} else if(mode=="string") {
-		xhr.send(JSON.stringify({string:getParameterByName("data")}));
-	} else if(mode=="frames") {
-		xhr.send(JSON.stringify({sequence:frames}));
-	} else if(mode=="flash") {
-		xhr.send(JSON.stringify({flash:format_board(boardState)}));
-	} else if(mode=="spin") {
-		xhr.send(JSON.stringify({spin:format_board(boardState)}));
-	} else if(mode=="scroll") {
-		xhr.send(JSON.stringify({scroll:format_board(boardState)}));
-	} else {
-		xhr.send(JSON.stringify({map:format_board(boardState)}));
-	}
+	xhr.send(data)
 }
 
 function format_board(board){

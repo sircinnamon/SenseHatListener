@@ -27,31 +27,47 @@ DEFAULT_SCROLL_DIRECTION=6
 DEFAULT_ROTATE_DELAY=0.3
 DEFAULT_ROTATE_LOOPS=4
 
-def handle_post_body(body):
-    global t
+def handle_post_body(body, path):
+    print(path)
     data = json.loads(body)
+    if(path == "/api/string"):
+        data["mode"] = "string"
+    elif(path == "/api/map"):
+        data["mode"] = "map"
+    elif(path == "/api/flash"):
+        data["mode"] = "flash"
+    elif(path == "/api/spin"):
+        data["mode"] = "spin"
+    elif(path == "/api/scroll"):
+        data["mode"] = "scroll"
+    elif(path == "/api/sequence"):
+        data["mode"] = "sequence"
+    elif(path == "/api/passive"):
+        data["mode"] = "passive"
+    else:
+        return
     q.put(data)
 
 def worker():
     while True:
         data = q.get()
-        if "map" in data:
+        if data["mode"] == "map":
             processGrid(data)
-        elif "string" in data:
+        elif data["mode"] == "string":
             if(len(data["string"])>32):
                 data["string"] = data["string"][:32]
             processString(data)
-        elif "sequence" in data:
+        elif data["mode"] == "sequence":
             if(len(data["sequence"])>256):
                 data["sequence"] = data["sequence"][:256]
             processSeq(data)
-        elif "default" in data:
-            processDefault(data)
-        elif "flash" in data:
+        elif data["mode"] == "passive":
+            processPassive(data)
+        elif data["mode"] == "flash":
             processFlash(data)
-        elif "scroll" in data:
+        elif data["mode"] == "scroll":
             processScroll(data)
-        elif "spin" in data:
+        elif data["mode"] == "spin":
             processSpin(data)
         sense.set_pixels(defaultScreen)
         q.task_done()
@@ -103,7 +119,7 @@ def processSeq(data):
     sense.clear()
     time.sleep(DELAY_BETWEEN_HANDLERS)
 
-def processDefault(data):
+def processPassive(data):
     # Take a Pixel, set of Pixels or Map and copy into the default screen state
     # Default screen state shows when no other events are being handled
     # Default screen will last until changed
@@ -125,7 +141,7 @@ def processDefault(data):
 
 def processFlash(data):
     # Take a Map and flash according to given delays
-    inmap = data["flash"]
+    inmap = data["map"]
     ontime = data["ontime"] if "ontime" in data else DEFAULT_FLASH_ONTIME
     offtime = data["offtime"] if "offtime" in data else DEFAULT_FLASH_OFFTIME
     loops = data["loops"] if "loops" in data else DEFAULT_FLASH_LOOPS
@@ -138,7 +154,7 @@ def processScroll(data):
     # Take a Map and scroll according to given speed and direction
     # Shifts are clockwise from 12, xy
     shifts = [(0,-1),(1,-1),(1,0),(1,1),(0,1),(-1,1),(-1,0),(-1,-1)]
-    inmap = make2d(formatMap(data["scroll"]))
+    inmap = make2d(formatMap(data["map"]))
     direction = data["direction"] if "direction" in data else DEFAULT_SCROLL_DIRECTION
     shift = shifts[direction]
     speed = data["speed"] if "speed" in data else DEFAULT_SCROLL_SPEED
@@ -152,7 +168,7 @@ def processScroll(data):
 
 def processSpin(data):
     # Take a Map and rotate 90 degrees on a given time and amount of loops
-    inmap = make2d(formatMap(data["spin"]))
+    inmap = make2d(formatMap(data["map"]))
     delay = data["delay"] if "delay" in data else DEFAULT_ROTATE_DELAY
     loops = data["loops"] if "loops" in data else DEFAULT_ROTATE_LOOPS
     steps = [
@@ -265,7 +281,7 @@ class S(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length) # <--- Gets the data itself
         logging.info("POST request,\nPath: %s\nHeaders:\n%s\n",str(self.path), str(self.headers))
         logging.debug("POST Body:\n%s\n", post_data.decode('utf-8'))
-        handle_post_body(post_data.decode('utf-8'))
+        handle_post_body(post_data.decode('utf-8'), self.path)
 
         self._set_response()
         self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
