@@ -137,7 +137,7 @@ def processPassive(data):
             data["pixel"]["colour"] = (0,0,0)
         if "x" not in data["pixel"]: data["pixel"]["x"] = 0
         if "y" not in data["pixel"]: data["pixel"]["y"] = 0
-        pixelScreen[data["pixel"]["y"]*8+data["pixel"]["x"]] = data["pixel"]["colour"]
+        defaultScreen[data["pixel"]["y"]*8+data["pixel"]["x"]] = data["pixel"]["colour"]
 
 def processFlash(data):
     # Take a Map and flash according to given delays
