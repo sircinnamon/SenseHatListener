@@ -350,6 +350,19 @@ components:
           description: "Time (in seconds) to hold each frame of the scroll"
           minimum: 0
           maximum: 1
+      example: >
+        {
+          "map": [[],[],[],[0,0,255],[],[],[],[]],
+            [[],[],[0,255,0],[],[],[],[],[]],
+            [[],[255,255,0],[],[],[],[],[],[]],
+            [[255,0,0],[255,0,0],[255,0,0],[255,0,0],[255,0,0],[255,0,0],[255,0,0],[255,0,0]],
+            [[],[255,255,0],[],[],[],[],[],[]],
+            [[],[],[0,255,0],[],[],[],[],[]],
+            [[],[],[],[0,0,255],[],[],[],[]],
+            [[],[],[],[],[],[],[],[]],
+          "direction": 6
+          "speed": 1
+        }
     spinSchema:
       title:  "spinSchema"
       description: "Object containing 1 8x8 Map to rotate on the LED grid"
@@ -361,6 +374,7 @@ components:
           $ref: "#/components/schemas/map"
         counterclockwise:
           type: "boolean"
+          default: false
         loops:
           type: "integer"
         delay:
@@ -369,6 +383,17 @@ components:
           description: "Time (in seconds) to hold each frame of the scroll"
           minimum: 0
           maximum: 1
+      example: >
+        {
+          "map": [
+              [[255,255,255],[255,255,255],[255,255,255]],
+              [[255,255,255]],
+              [[255,255,255]]
+            ],
+          "loops": 20,
+          "delay": 0.5,
+          "counterclockwise": false
+        }
         
     RGB:
       description: "An RGB colour value. Missing values are assumed to be zeros, i.e. [] = [0,0,0], [0, 255] = [0,255,0]"
