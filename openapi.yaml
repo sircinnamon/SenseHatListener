@@ -186,6 +186,11 @@ components:
       title: "mapSchema"
       description: "Object containing 1 8x8 Map to display, as 2d (8x8) or 1d (64) array."
       type: "object"
+      required:
+      - "map"
+      properties:
+        map:
+          $ref: "#/components/schemas/map"
       example: >
         {
           "map": [
@@ -199,22 +204,42 @@ components:
             [[255,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,255,0]]
           ]
         }
-      required:
-      - "map"
-      properties:
-        map:
-          $ref: "#/components/schemas/map"
     sequenceSchema:
       title: "sequenceSchema"
       description: "Object containing a start state and a sequence of steps representing board states to animate through at given timing."
       type: "object"
+      required:
+      - "sequence"
       properties:
         start:
           $ref: "#/components/schemas/map"
         sequence:
           type: "array"
+          minItems: 1
           items:
             $ref: "#/components/schemas/sequenceStep"
+      example: >
+        {
+          "start": [[255,0,0]],
+          "sequence": [
+            {
+              "pixel": {
+                "colour": [255,0,0]
+                "x": 1,
+                "y": 0
+              }
+              "delay": 0.5
+            },
+            {
+              "pixel": {
+                "colour": [255,0,0]
+                "x": 2,
+                "y": 0
+              },
+              "delay": 0.5
+            }
+          ]
+        }
     sequenceStep:
       title:  "sequenceStep"
       description: "Object describing the difference between two map states. Provide one of [ pixels | map | pixel ]"
@@ -258,6 +283,14 @@ components:
           $ref: "#/components/schemas/map"
         pixel:
           $ref: "#/components/schemas/pixel"
+      example: >
+        {
+          "pixel":{
+            "x":5
+            "y":5
+            "colour":[0,255,0]
+          }
+        }
     flashSchema:
       title:  "flashSchema"
       description: "Object containing 1 8x8 Map to flash on the LED grid"
@@ -281,6 +314,22 @@ components:
           maximum: 1
         loops:
           type: "integer"
+      example: >
+        {
+          "map": [
+            [[30,0,0],[],[],[],[],[],[],[0,30,0]],
+            [[60,0,0],[],[],[],[],[],[],[0,60,0]],
+            [[90,0,0],[],[],[],[],[],[],[0,90,0]],
+            [[120,0,0],[],[],[],[],[],[],[0,120,0]],
+            [[150,0,0],[],[],[],[],[],[],[0,150,0]],
+            [[180,0,0],[],[],[],[],[],[],[0,180,0]],
+            [[210,0,0],[],[],[],[],[],[],[0,210,0]],
+            [[240,0,0],[],[],[],[],[],[],[0,240,0]]
+          ],
+          "ontime": 1
+          "offtime": 0.3
+          "loops": 15
+        }
     scrollSchema:
       title:  "scrollSchema"
       description: "Object containing 1 8x8 Map to scroll across the LED grid"
