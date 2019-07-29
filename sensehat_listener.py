@@ -123,6 +123,7 @@ def processPassive(data):
     # Take a Pixel, set of Pixels or Map and copy into the default screen state
     # Default screen state shows when no other events are being handled
     # Default screen will last until changed
+    global defaultScreen
     if "pixels" in data:
         for pixel in data["pixels"]:
             if "colour" not in pixel:
