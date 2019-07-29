@@ -12,7 +12,7 @@ info:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 servers:
-- url: "/api"
+- url: "http://S0106bc9b68c2bc01.cg.shawcable.net:8080/api"
 # basePath: "/api"
 # schemes:
 # - "http"
@@ -203,14 +203,14 @@ components:
       - "map"
       properties:
         map:
-          $ref: "#/components/schemas/2dmap"
+          $ref: "#/components/schemas/map"
     sequenceSchema:
       title: "sequenceSchema"
       description: "Object containing a start state and a sequence of steps representing board states to animate through at given timing."
       type: "object"
       properties:
         start:
-          $ref: "#/components/schemas/2dmap"
+          $ref: "#/components/schemas/map"
         sequence:
           type: "array"
           items:
@@ -230,7 +230,7 @@ components:
           items:
             $ref: "#/components/schemas/pixel"
         map:
-          $ref: "#/components/schemas/2dmap"
+          $ref: "#/components/schemas/map"
         pixel:
           $ref: "#/components/schemas/pixel"
         delay:
@@ -255,7 +255,7 @@ components:
           items:
             $ref: "#/components/schemas/pixel"
         map:
-          $ref: "#/components/schemas/2dmap"
+          $ref: "#/components/schemas/map"
         pixel:
           $ref: "#/components/schemas/pixel"
     flashSchema:
@@ -266,7 +266,7 @@ components:
       - "map"
       properties:
         map:
-          $ref: "#/components/schemas/2dmap"
+          $ref: "#/components/schemas/map"
         ontime:
           type: "number"
           format: "float"
@@ -289,7 +289,7 @@ components:
       - "map"
       properties:
         map:
-          $ref: "#/components/schemas/2dmap"
+          $ref: "#/components/schemas/map"
         direction:
           description: "Representing the direction with 4 cardinals and 4 diagonals. 0 is UP, 4 is DOWN, 7 is UP+LEFT, etc..."
           type: "integer"
@@ -309,7 +309,7 @@ components:
       - "map"
       properties:
         map:
-          $ref: "#/components/schemas/2dmap"
+          $ref: "#/components/schemas/map"
         counterclockwise:
           type: "boolean"
         loops:
@@ -342,6 +342,17 @@ components:
         maxItems: 8
         items:
           $ref: "#/components/schemas/RGB"
+    1dmap:
+      description: "1-Dimensional (1x64) array of RGB values representing the whole grid. Trailing black pixels or rows can be omitted."
+      type: "array"
+      minItems: 0
+      maxItems: 64
+      items:
+        $ref: "#/components/schemas/RGB"
+    map:
+      oneOf:
+        - $ref: "#/components/schemas/2dmap"
+        - $ref: "#/components/schemas/1dmap"
     pixel:
       description: "Represents a pixel's state with its XY coord and RGB colour"
       type: "object"
@@ -360,4 +371,3 @@ components:
           type: "integer"
           minimum: 0
           maximum: 7
-    
