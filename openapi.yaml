@@ -19,6 +19,36 @@ servers:
 # consumes:
 # - "application/json"
 paths:
+  /queue:
+    get:
+      summary: "Get the current queue length"
+      description: "Get the number of posted states waiting to be displayed"
+      operationId: "getQueue"
+      responses:
+        200:
+          description: "Successful GET"
+          content:
+            application/json:
+              schema:
+                properties:
+                  length:
+                    type: integer
+              example:
+                length: 5
+  /grid:
+    get:
+      summary: "Get the current grid content"
+      description: "Get the map representing the current grid"
+      operationId: "getGrid"
+      responses:
+        200:
+          description: "Successful GET"
+          content:
+            application/json:
+              schema:
+                properties:
+                  map:
+                    $ref: "#/components/schemas/2dmap"
   /string:
     post:
       summary: "Input a string to scroll across the grid"
@@ -96,7 +126,6 @@ paths:
         401:
           description: "User is not authenticated"
   /flash:
-
     post:
       summary: "Input an 8x8 Map to flash on the LED grid"
       description: "As with the Map endpoint, but this will flash on and off at a configurable interval"
@@ -116,7 +145,6 @@ paths:
         401:
           description: "User is not authenticated"
   /scroll:
-
     post:
       summary: "Input an 8x8 Map to scroll across the LED grid"
       description: "As with the Map endpoint, but this will scroll across the grid in a given direction"
