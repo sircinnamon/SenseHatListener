@@ -286,8 +286,8 @@ components:
       example: >
         {
           "pixel":{
-            "x":5
-            "y":5
+            "x":5,
+            "y":5,
             "colour":[0,255,0]
           }
         }
