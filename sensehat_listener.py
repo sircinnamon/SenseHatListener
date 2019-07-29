@@ -264,6 +264,92 @@ def rotateMap(m, deg):
                 newmap[i][j] = m[j][7-i]
     return newmap
 
+def validMap(m):
+    # XOR
+    return (valid1dMap(m) or valid2dMap(m))
+
+def valid1dMap(m):
+    if not isinstance(m, list): return False
+    if len(m) > 64: return False
+    for item in m:
+        if not validRGB(item):
+            return False
+    return True
+
+def valid2dMap(m):
+    if not isinstance(m, list): return False
+    if len(m) > 8: return False
+    for row in m:
+        if not isinstance(row, list): return False
+        if len(row) > 8: return False
+        for col in row:
+            if not validRGB(col):
+                return False
+    return True
+
+def validRGB(c):
+    if not isinstance(c, list): return False
+    if len(c) > 3: return False
+    for item in c:
+        if not isinstance(item, int): return False
+        if item < 0:
+            return False
+        elif item > 255:
+            return False
+    return True
+
+def validPixel(p):
+    if not isinstance(p, dict): return False
+    allowed_keys = ["x", "colour", "y"]
+    for k in p.keys(): 
+        if k not in allowed_keys: return False
+    if "colour" in p.keys() and not validRGB(p["colour"]):
+        return False
+    if "x" in p.keys():
+        if not isinstance(p["x"], int): return False
+        if p["x"] > 7 or p["x"] < 0: return False
+    if "y" in p.keys():
+        if not isinstance(p["y"], int): return False
+        if p["y"] > 7 or p["y"] < 0: return False
+
+def validStringPost(p):
+    if not isinstance(p, dict): return False
+    allowed_keys = ["string", "colour", "background", "speed"]
+    if "string" not in p.keys(): return False
+    if len(p["string"]) > 32 or len(p["string"]) == 0: return False
+    for k in p.keys():
+        if k not in allowed_keys: return False
+    if "colour" in p.keys() and not validRGB(p["colour"]): return False
+    if "background" in p.keys() and not validRGB(p["background"]): return False
+    if "speed" in p.keys():
+        if p["speed"] > 1 or p["speed"] < 0.01:
+            return False
+    return True
+
+def validMapPost(p):
+    if not isinstance(p, dict): return False
+    if "map" not in p.keys(): return False
+    if not validMap(p["map"]): return False
+    return True
+
+def validSequencePost(p):
+    return True
+
+def validSequenceStep(p):
+    return True
+
+def validPassivePost(p):
+    return True
+
+def validFlashPost(p):
+    return True
+
+def validScrollPost(p):
+    return True
+
+def validSpinPost(p):
+    return True
+
 
 class S(BaseHTTPRequestHandler):
     def _set_response(self):
