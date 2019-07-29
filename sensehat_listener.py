@@ -107,12 +107,12 @@ def processSeq(data):
                 sense.set_pixel(pixel["x"], pixel["y"], pixel["colour"])
         elif "map" in step:
             sense.set_pixels(formatMap(step["map"]))
-        else:
-            if "colour" not in step:
-                step["colour"] = (0,0,0)
-            if "x" not in step: step["x"] = 0
-            if "y" not in step: step["y"] = 0
-            sense.set_pixel(step["x"], step["y"], step["colour"])
+        elif "pixel" in step:
+            if "colour" not in step["pixel"]:
+                step["pixel"]["colour"] = (0,0,0)
+            if "x" not in step["pixel"]: step["pixel"]["x"] = 0
+            if "y" not in step["pixel"]: step["pixel"]["y"] = 0
+            sense.set_pixel(step["pixel"]["x"], step["pixel"]["y"], step["pixel"]["colour"])
         delay = min(1, step["delay"]) if "delay" in step else DEFAULT_SEQ_DELAY
         time.sleep(delay)
     time.sleep(SEQ_FINAL_PAUSE) # Hold final state
@@ -123,21 +123,21 @@ def processPassive(data):
     # Take a Pixel, set of Pixels or Map and copy into the default screen state
     # Default screen state shows when no other events are being handled
     # Default screen will last until changed
-    if "pixels" in data["default"]:
-        for pixel in data["default"]["pixels"]:
+    if "pixels" in data:
+        for pixel in data["pixels"]:
             if "colour" not in pixel:
                 pixel["colour"] = (0,0,0)
             if "x" not in pixel: pixel["x"] = 0
             if "y" not in pixel: pixel["y"] = 0
             defaultScreen[pixel["y"]*8+pixel["x"]] = pixel["colour"]
-    elif "map" in data["default"]:
-        defaultScreen = formatMap(data["default"]["map"])
-    else:
-        if "colour" not in data["default"]:
-            data["default"]["colour"] = (0,0,0)
-        if "x" not in data["default"]: data["default"]["x"] = 0
-        if "y" not in data["default"]: data["default"]["y"] = 0
-        defaultScreen[data["default"]["y"]*8+data["default"]["x"]] = data["default"]["colour"]
+    elif "map" in data:
+        defaultScreen = formatMap(data["map"])
+    elif "pixel" in data:
+        if "colour" not in data["pixel"]:
+            data["pixel"]["colour"] = (0,0,0)
+        if "x" not in data["pixel"]: data["pixel"]["x"] = 0
+        if "y" not in data["pixel"]: data["pixel"]["y"] = 0
+        pixelScreen[data["pixel"]["y"]*8+data["pixel"]["x"]] = data["pixel"]["colour"]
 
 def processFlash(data):
     # Take a Map and flash according to given delays
