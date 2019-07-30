@@ -53,7 +53,7 @@ def handle_get(req):
     elif(req.path == "/api/grid"):
         return handle_get_grid()
     else:
-        return ""
+        return {"res": "Not Found"}
 
 def worker():
     while True:
@@ -380,7 +380,7 @@ class S(BaseHTTPRequestHandler):
     def do_GET(self):
         logging.info("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
         self._set_response()
-        self.wfile.write("{}".format(handle_get(self)).encode('utf-8'))
+        self.wfile.write("{}".format(json.dumps(handle_get(self))).encode('utf-8'))
 
     def do_POST(self):
         content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
