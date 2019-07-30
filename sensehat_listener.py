@@ -28,7 +28,6 @@ DEFAULT_ROTATE_DELAY=0.3
 DEFAULT_ROTATE_LOOPS=4
 
 def handle_post_body(body, path):
-    print(path)
     data = json.loads(body)
     if(path == "/api/string"):
         data["mode"] = "string"
@@ -47,6 +46,14 @@ def handle_post_body(body, path):
     else:
         return
     q.put(data)
+
+def handle_get(req):
+    if(req.path == "/api/queue"):
+        return handle_get_queue()
+    elif(req.path == "/api/grid"):
+        return handle_get_grid()
+    else:
+        return ""
 
 def worker():
     while True:
@@ -182,6 +189,12 @@ def processSpin(data):
         steps = [steps[0]]+steps[1:][::-1]
     sequence = steps*loops
     processSeq({"sequence":sequence})
+
+def handle_get_queue():
+    return {"length": len(q.queue)}
+
+def handle_get_grid():
+    return {"map": make2d(sense.get_pixels())}
 
 def formatMap(arr):
     # Parse an array with omitted default values (rows or black values)
@@ -355,7 +368,7 @@ def validSpinPost(p):
 class S(BaseHTTPRequestHandler):
     def _set_response(self):
         self.send_response(200)
-        self.send_header('Content-type', 'text/html')
+        self.send_header('Content-type', 'application/json')
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type, api_key, Authorization')
@@ -367,7 +380,7 @@ class S(BaseHTTPRequestHandler):
     def do_GET(self):
         logging.info("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
         self._set_response()
-        self.wfile.write("GET request for {}".format(self.path).encode('utf-8'))
+        self.wfile.write("{}".format(handle_get(self)).encode('utf-8'))
 
     def do_POST(self):
         content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
@@ -377,7 +390,7 @@ class S(BaseHTTPRequestHandler):
         handle_post_body(post_data.decode('utf-8'), self.path)
 
         self._set_response()
-        self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
+        self.wfile.write('{"res":"POST request for {}"}'.format(self.path).encode('utf-8'))
 
 def run(server_class=HTTPServer, handler_class=S, port=8080):
     logging.basicConfig(level=logging.INFO)
