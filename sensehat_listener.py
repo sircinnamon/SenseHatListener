@@ -340,28 +340,129 @@ def validStringPost(p):
             return False
     return True
 
+# Schema Validations
+
 def validMapPost(p):
     if not isinstance(p, dict): return False
+    allowed_keys = ["map"]
+    for k in p.keys():
+        if k not in allowed_keys: return False
     if "map" not in p.keys(): return False
     if not validMap(p["map"]): return False
     return True
 
 def validSequencePost(p):
+    if not isinstance(p, dict): return False
+    allowed_keys = ["start", "sequence"]
+    for k in p.keys():
+        if k not in allowed_keys: return False
+    if "start" in p.keys() and not validMap(p["start"]): return False
+    if "sequence" not in p.keys(): return False
+    if not isinstance(p["sequence"], list): return False
+    for step in p["sequence"]:
+        if not validSequenceStep(step): return False
     return True
 
 def validSequenceStep(p):
+    if not isinstance(p, dict): return False
+    allowed_keys = ["delay", "map", "pixel", "pixels"]
+    for k in p.keys():
+        if k not in allowed_keys: return False
+    if "delay" in p:
+        if not isinstance(p["delay"], int): return False
+        if (p["delay"] > 1 or p["delay"] < 0): return False
+    if "map" in p:
+        if "pixel" in p: return False
+        if "pixels" in p: return False
+        if not validMap(p["map"]): return False
+    if "pixel" in p:
+        if "map" in p: return False
+        if "pixels" in p: return False
+        if not validPixel(p["pixel"]): return False
+    if "pixels" in p:
+        if "map" in p: return False
+        if "pixel" in p: return False
+        if not isinstance(p["pixels"], list): return False
+        if (len(p["pixels"])>64) or (len(p["pixels"])<2): return False
+        for px in p["pixels"]:
+            if not validPixel(px["pixel"]): return False
     return True
 
 def validPassivePost(p):
+    if not isinstance(p, dict): return False
+    allowed_keys = ["map", "pixel", "pixels"]
+    for k in p.keys():
+        if k not in allowed_keys: return False
+    if "map" in p:
+        if "pixel" in p: return False
+        if "pixels" in p: return False
+        if not validMap(p["map"]): return False
+    if "pixel" in p:
+        if "map" in p: return False
+        if "pixels" in p: return False
+        if not validPixel(p["pixel"]): return False
+    if "pixels" in p:
+        if "map" in p: return False
+        if "pixel" in p: return False
+        if not isinstance(p["pixels"], list): return False
+        if (len(p["pixels"])>64) or (len(p["pixels"])<2): return False
+        for px in p["pixels"]:
+            if not validPixel(px["pixel"]): return False
     return True
 
 def validFlashPost(p):
+    if not isinstance(p, dict): return False
+    allowed_keys = ["map", "ontime", "offtime", "loops"]
+    for k in p.keys():
+        if k not in allowed_keys: return False
+    if "ontime" in p:
+        if not isinstance(p["ontime"], float):
+            if not isinstance(p["ontime"], int):
+                return False
+        if (p["ontime"] > 1 or p["ontime"] < 0): return False
+    if "offtime" in p:
+        if not isinstance(p["offtime"], float):
+            if not isinstance(p["offtime"], int):
+                return False
+        if (p["offtime"] > 1 or p["offtime"] < 0): return False
+    if "loops" in p:
+        if not isinstance(p["loops"], int): return False
+    if "map" not in p: return False
+    if not validMap(p["map"]): return False
     return True
 
 def validScrollPost(p):
+    if not isinstance(p, dict): return False
+    allowed_keys = ["map", "direction", "speed"]
+    for k in p.keys():
+        if k not in allowed_keys: return False
+    if "speed" in p:
+        if not isinstance(p["speed"], float):
+            if not isinstance(p["speed"], int):
+                return False
+        if (p["speed"] > 1 or p["speed"] < 0): return False
+    if "direction" in p:
+        if not isinstance(p["direction"], int): return False
+        if direction < 0 or direction > 7: return False
+    if "map" not in p: return False
+    if not validMap(p["map"]): return False
     return True
 
 def validSpinPost(p):
+    if not isinstance(p, dict): return False
+    allowed_keys = ["map", "counterclockwise", "loops", "delay"]
+    for k in p.keys():
+        if k not in allowed_keys: return False
+    if "counterclockwise" in p:
+        if not isinstance(p["counterclockwise"], bool):
+            return False
+    if "delay" in p:
+        if not isinstance(p["delay"], int): return False
+        if (p["delay"] > 1 or p["delay"] < 0): return False
+    if "loops" in p:
+        if not isinstance(p["loops"], int): return False
+    if "map" not in p: return False
+    if not validMap(p["map"]): return False
     return True
 
 

@@ -271,27 +271,60 @@ components:
     sequenceStep:
       title:  "sequenceStep"
       description: "Object describing the difference between two map states. Provide one of [ pixels | map | pixel ]"
-      type: "object"
-      minProperties: 1
-      maxProperties: 2
-      properties:
-        pixels:
-          description: "An array of colours and XY coords corresponding to single pixel changes"
-          type: "array"
-          maxItems: 64
-          minItems: 2
-          items:
+      oneOf:
+      - title:  "sequenceStepMap"
+        description: "Set entire grid using a full map object."
+        type: "object"
+        minProperties: 1
+        maxProperties: 2
+        required:
+        - "map"
+        properties:
+          map:
+            $ref: "#/components/schemas/map"
+          delay:
+            type: "number"
+            format: "float"
+            description: "Time (in seconds) to hold the frame"
+            minimum: 0
+            maximum: 1
+      - title:  "sequenceStepPixel"
+        description: "Provide a single pixel to update"
+        type: "object"
+        minProperties: 1
+        maxProperties: 2
+        required:
+        - "pixel"
+        properties:
+          pixel:
             $ref: "#/components/schemas/pixel"
-        map:
-          $ref: "#/components/schemas/map"
-        pixel:
-          $ref: "#/components/schemas/pixel"
-        delay:
-          type: "number"
-          format: "float"
-          description: "Time (in seconds) to hold the frame"
-          minimum: 0
-          maximum: 1
+          delay:
+            type: "number"
+            format: "float"
+            description: "Time (in seconds) to hold the frame"
+            minimum: 0
+            maximum: 1
+      - title:  "sequenceStepPixels"
+        description: "Provide a list of pixels to update"
+        type: "object"
+        minProperties: 1
+        maxProperties: 2
+        required:
+        - "pixels"
+        properties:
+          pixels:
+            description: "An array of colours and XY coords corresponding to single pixel changes"
+            type: "array"
+            maxItems: 64
+            minItems: 2
+            items:
+              $ref: "#/components/schemas/pixel"
+          delay:
+            type: "number"
+            format: "float"
+            description: "Time (in seconds) to hold the frame"
+            minimum: 0
+            maximum: 1
           
     passiveSchema:
       title:  "passiveSchema"
@@ -454,7 +487,7 @@ components:
       items:
         $ref: "#/components/schemas/RGB"
     map:
-      oneOf:
+      anyOf:
         - $ref: "#/components/schemas/2dmap"
         - $ref: "#/components/schemas/1dmap"
     pixel:
