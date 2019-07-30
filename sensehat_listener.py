@@ -29,35 +29,71 @@ DEFAULT_ROTATE_LOOPS=4
 
 def handle_post_body(body, path):
     data = json.loads(body)
+    print("A===")
+    print(json.dumps(data))
+    print("====")
+    ret = {}
     if(path == "/api/string"):
-        data["mode"] = "string"
+        if(validStringPost(data)):
+            data["mode"] = "string"
+            ret = {"status": 200}
+        else:
+            return {"status": 400}
     elif(path == "/api/map"):
-        data["mode"] = "map"
+        if(validMapPost(data)):
+            data["mode"] = "map"
+            ret = {"status": 200}
+        else:
+            return {"status": 400}
     elif(path == "/api/flash"):
-        data["mode"] = "flash"
+        if(validFlashPost(data)):
+            data["mode"] = "flash"
+            ret = {"status": 200}
+        else:
+            return {"status": 400}
     elif(path == "/api/spin"):
-        data["mode"] = "spin"
+        if(validSpinPost(data)):
+            data["mode"] = "spin"
+            ret = {"status": 200}
+        else:
+            return {"status": 400}
     elif(path == "/api/scroll"):
-        data["mode"] = "scroll"
+        if(validScrollPost(data)):
+            data["mode"] = "scroll"
+            ret = {"status": 200}
+        else:
+            return {"status": 400}
     elif(path == "/api/sequence"):
-        data["mode"] = "sequence"
+        if(validSequencePost(data)):
+            data["mode"] = "sequence"
+            ret = {"status": 200}
+        else:
+            return {"status": 400}
     elif(path == "/api/passive"):
-        data["mode"] = "passive"
+        if(validPassivePost(data)):
+            data["mode"] = "passive"
+            ret = {"status": 200}
+        else:
+            return {"status": 400}
     else:
-        return
+        return {"status": 404}
     q.put(data)
+    return ret
 
 def handle_get(req):
     if(req.path == "/api/queue"):
-        return handle_get_queue()
+        return {"status":200, "body":handle_get_queue()}
     elif(req.path == "/api/grid"):
-        return handle_get_grid()
+        return {"status":200, "body":handle_get_grid()}
     else:
-        return {"res": "Not Found"}
+        return {"status":400, "body":{"res": "Not Found"}}
 
 def worker():
     while True:
         data = q.get()
+        print("B===")
+        print(json.dumps(data))
+        print("====")
         if data["mode"] == "map":
             processGrid(data)
         elif data["mode"] == "string":
@@ -325,6 +361,7 @@ def validPixel(p):
     if "y" in p.keys():
         if not isinstance(p["y"], int): return False
         if p["y"] > 7 or p["y"] < 0: return False
+    return True
 
 def validStringPost(p):
     if not isinstance(p, dict): return False
@@ -369,7 +406,8 @@ def validSequenceStep(p):
     for k in p.keys():
         if k not in allowed_keys: return False
     if "delay" in p:
-        if not isinstance(p["delay"], int): return False
+        if not isinstance(p["delay"], float):
+            if not isinstance(p["delay"], int): return False
         if (p["delay"] > 1 or p["delay"] < 0): return False
     if "map" in p:
         if "pixel" in p: return False
@@ -443,7 +481,7 @@ def validScrollPost(p):
         if (p["speed"] > 1 or p["speed"] < 0): return False
     if "direction" in p:
         if not isinstance(p["direction"], int): return False
-        if direction < 0 or direction > 7: return False
+        if p["direction"] < 0 or p["direction"] > 7: return False
     if "map" not in p: return False
     if not validMap(p["map"]): return False
     return True
@@ -457,7 +495,8 @@ def validSpinPost(p):
         if not isinstance(p["counterclockwise"], bool):
             return False
     if "delay" in p:
-        if not isinstance(p["delay"], int): return False
+        if not isinstance(p["delay"], float):
+            if not isinstance(p["delay"], int): return False
         if (p["delay"] > 1 or p["delay"] < 0): return False
     if "loops" in p:
         if not isinstance(p["loops"], int): return False
@@ -467,8 +506,8 @@ def validSpinPost(p):
 
 
 class S(BaseHTTPRequestHandler):
-    def _set_response(self):
-        self.send_response(200)
+    def _set_response(self, code):
+        self.send_response(code)
         self.send_header('Content-type', 'application/json')
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
@@ -476,22 +515,23 @@ class S(BaseHTTPRequestHandler):
         self.end_headers()
     
     def do_OPTIONS(self):
-        self._set_response()
+        self._set_response(200)
 
     def do_GET(self):
         logging.info("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
-        self._set_response()
-        self.wfile.write("{}".format(json.dumps(handle_get(self))).encode('utf-8'))
+        res = handle_get(self)
+        self._set_response(res["status"])
+        self.wfile.write("{}".format(json.dumps(res["body"])).encode('utf-8'))
 
     def do_POST(self):
         content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
         post_data = self.rfile.read(content_length) # <--- Gets the data itself
         logging.info("POST request,\nPath: %s\nHeaders:\n%s\n",str(self.path), str(self.headers))
         logging.debug("POST Body:\n%s\n", post_data.decode('utf-8'))
-        handle_post_body(post_data.decode('utf-8'), self.path)
+        res = handle_post_body(post_data.decode('utf-8'), self.path)
 
-        self._set_response()
-        self.wfile.write('{"res":"POST request for {}"}'.format(self.path).encode('utf-8'))
+        self._set_response(res["status"])
+        # self.wfile.write('{"res":"POST request for {}"}'.format(self.path).encode('utf-8'))
 
 def run(server_class=HTTPServer, handler_class=S, port=8080):
     logging.basicConfig(level=logging.INFO)
