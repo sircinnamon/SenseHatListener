@@ -28,10 +28,10 @@ DEFAULT_ROTATE_DELAY=0.3
 DEFAULT_ROTATE_LOOPS=4
 
 def handle_post_body(body, path):
-    data = json.loads(body)
-    print("A===")
-    print(json.dumps(data))
-    print("====")
+    try:
+        data = json.loads(body)
+    except ValueError as e:
+        return {"status": 400, "err":"Invalid JSON"}
     ret = {}
     if(path == "/api/string"):
         if(validStringPost(data)):
@@ -91,9 +91,6 @@ def handle_get(req):
 def worker():
     while True:
         data = q.get()
-        print("B===")
-        print(json.dumps(data))
-        print("====")
         if data["mode"] == "map":
             processGrid(data)
         elif data["mode"] == "string":
@@ -423,7 +420,7 @@ def validSequenceStep(p):
         if not isinstance(p["pixels"], list): return False
         if (len(p["pixels"])>64) or (len(p["pixels"])<2): return False
         for px in p["pixels"]:
-            if not validPixel(px["pixel"]): return False
+            if not validPixel(px): return False
     return True
 
 def validPassivePost(p):
