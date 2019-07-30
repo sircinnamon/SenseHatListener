@@ -144,7 +144,7 @@ def processSeq(data):
                     pixel["colour"] = (0,0,0)
                 if "x" not in pixel: pixel["x"] = 0
                 if "y" not in pixel: pixel["y"] = 0
-                sense.set_pixel(pixel["x"], pixel["y"], pixel["colour"])
+                sense.set_pixel(pixel["x"], pixel["y"], tuple(pixel["colour"]))
         elif "map" in step:
             sense.set_pixels(formatMap(step["map"]))
         elif "pixel" in step:
@@ -152,7 +152,7 @@ def processSeq(data):
                 step["pixel"]["colour"] = (0,0,0)
             if "x" not in step["pixel"]: step["pixel"]["x"] = 0
             if "y" not in step["pixel"]: step["pixel"]["y"] = 0
-            sense.set_pixel(step["pixel"]["x"], step["pixel"]["y"], step["pixel"]["colour"])
+            sense.set_pixel(step["pixel"]["x"], step["pixel"]["y"], tuple(step["pixel"]["colour"]))
         delay = min(1, step["delay"]) if "delay" in step else DEFAULT_SEQ_DELAY
         time.sleep(delay)
     time.sleep(SEQ_FINAL_PAUSE) # Hold final state
