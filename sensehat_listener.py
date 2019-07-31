@@ -366,12 +366,15 @@ def validStringPost(p):
     if not isinstance(p, dict): return False
     allowed_keys = ["string", "colour", "background", "speed"]
     if "string" not in p.keys(): return False
+    if not isinstance(p["string"], str): return False
     if len(p["string"]) > 32 or len(p["string"]) == 0: return False
     for k in p.keys():
         if k not in allowed_keys: return False
     if "colour" in p.keys() and not validRGB(p["colour"]): return False
     if "background" in p.keys() and not validRGB(p["background"]): return False
     if "speed" in p.keys():
+        if not isinstance(p["speed"], float):
+            if not isinstance(p["speed"], int): return False
         if p["speed"] > 1 or p["speed"] < 0.01:
             return False
     return True
