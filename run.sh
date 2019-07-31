@@ -24,7 +24,7 @@ docker run -d \
 	--name $PYTHON_CONTAINER \
 	--net $NETWORK_NAME --ip $PYTHON_IP \
 	--privileged \
-	sensehat python /sensehat_listener.py 80
+	sensehat python3 /sensehat_listener.py 80
 
 docker rm $NGINX_CONTAINER
 docker run -d \
