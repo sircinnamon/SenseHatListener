@@ -2,16 +2,25 @@
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
-from sense_hat import SenseHat
 import json
 from threading import Timer, Thread
 from queue import Queue
 from copy import deepcopy
 import time
+import dummy_sense_hat
+import argparse
 
-sense = SenseHat()
+DUMMY_SENSE_HAT = True
+try:
+    from sense_hat import SenseHat
+    sense = SenseHat()
+except Exception as e:
+    print("WARNING: FAILED SENSEHAT IMPORT - USING DUMMY SENSEHAT")
+    sense = dummy_sense_hat.DummySenseHat()
+
 sense.set_rotation(270)
 t = Timer(5.0, sense.clear)
+
 q = Queue()
 defaultScreen = [[0,0,0]]*64
 
@@ -550,7 +559,11 @@ if __name__ == '__main__':
     t = Thread(target=worker)
     t.daemon = True
     t.start()
-    if len(argv) == 2:
-        run(port=int(argv[1]))
-    else:
-        run()
+    parser = argparse.ArgumentParser(description='Start a listener.')
+    parser.add_argument("--port", "-p", help="Port to run on", default=8080, type=int, required=False)
+    parser.add_argument("--dummy", "-d", help="Run without actually using the SenseHat", action="count")
+    args = parser.parse_args()
+    if args.dummy:
+        print("DUMMY MODE ENABLED")
+        sense = dummy_sense_hat.DummySenseHat()
+    run(port=args.port)
