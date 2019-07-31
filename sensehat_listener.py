@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
 from sense_hat import SenseHat
 import json
 from threading import Timer, Thread
-from Queue import Queue
+from queue import Queue
 from copy import deepcopy
 import time
 
@@ -360,6 +360,8 @@ def validPixel(p):
         if p["y"] > 7 or p["y"] < 0: return False
     return True
 
+# Schema Validations
+
 def validStringPost(p):
     if not isinstance(p, dict): return False
     allowed_keys = ["string", "colour", "background", "speed"]
@@ -373,8 +375,6 @@ def validStringPost(p):
         if p["speed"] > 1 or p["speed"] < 0.01:
             return False
     return True
-
-# Schema Validations
 
 def validMapPost(p):
     if not isinstance(p, dict): return False

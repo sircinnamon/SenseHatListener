@@ -155,3 +155,90 @@ class TestMap(object):
 		assert sensehat_listener.formatMap(m1) == m
 		assert sensehat_listener.formatMap(m2) == m
 
+class TestStringPostSchema(object):
+	def test_minimal_case(self):
+		p = {"string":"a"}
+		assert validStringPost(p)
+
+	def test_all_keys_case(self):
+		p = {"string":"a", "colour":[0,0,50], "background":[50,0,0], "speed":0.1}
+		assert validStringPost(p)
+
+	def test_float_speed_case(self):
+		p = {"string":"a", "speed":0.1}
+		assert validStringPost(p)
+
+	def test_int_speed_case(self):
+		p = {"string":"a", "speed":1}
+		assert validStringPost(p)
+
+	def test_long_string_case(self):
+		p = {"string":"abcdefghijklmnopqrstuvwxyz123456"}
+		assert validStringPost(p)
+
+	# Invalid Cases
+	def test_empty_case(self):
+		p = {}
+		assert not validStringPost(p)
+
+	def test_too_long_string_case(self):
+		p = {"string":"abcdefghijklmnopqrstuvwxyz1234567"}
+		assert validStringPost(p)
+
+	def test_extra_keys(self):
+		p = {"string":"abcdefghijklmnopqrstuvwxyz1234567", "badkey":True}
+		assert validStringPost(p)
+
+	def test_bad_value_types(self):
+		p = {"string":True}
+		assert validStringPost(p)
+		p = {"string":"Str", "colour":True}
+		assert validStringPost(p)
+		p = {"string":"Str", "background":True}
+		assert validStringPost(p)
+		p = {"string":"Str", "speed":True}
+		assert validStringPost(p)
+
+class TestMapPostSchema(object):
+	def test_minimal_case(self):
+		p = {"map":[[[]]]}
+		assert validStringPost(p)
+
+	def test_all_keys_case(self):
+		p = {"string":"a", "colour":[0,0,50], "background":[50,0,0], "speed":0.1}
+		assert validStringPost(p)
+
+	def test_float_speed_case(self):
+		p = {"string":"a", "speed":0.1}
+		assert validStringPost(p)
+
+	def test_int_speed_case(self):
+		p = {"string":"a", "speed":1}
+		assert validStringPost(p)
+
+	def test_long_string_case(self):
+		p = {"string":"abcdefghijklmnopqrstuvwxyz123456"}
+		assert validStringPost(p)
+
+	# Invalid Cases
+	def test_empty_case(self):
+		p = {}
+		assert not validStringPost(p)
+
+	def test_too_long_string_case(self):
+		p = {"string":"abcdefghijklmnopqrstuvwxyz1234567"}
+		assert validStringPost(p)
+
+	def test_extra_keys(self):
+		p = {"string":"abcdefghijklmnopqrstuvwxyz1234567", "badkey":True}
+		assert validStringPost(p)
+
+	def test_bad_value_types(self):
+		p = {"string":True}
+		assert validStringPost(p)
+		p = {"string":"Str", "colour":True}
+		assert validStringPost(p)
+		p = {"string":"Str", "background":True}
+		assert validStringPost(p)
+		p = {"string":"Str", "speed":True}
+		assert validStringPost(p)
