@@ -20,6 +20,7 @@ docker network create \
 docker rm $PYTHON_CONTAINER
 docker run -d \
 	-v $(pwd)/sensehat_listener.py:/sensehat_listener.py \
+	-v $(pwd)/dummy_sense_hat.py:/dummy_sense_hat.py \
 	-v /etc/localtime:/etc/localtime:ro \
 	--name $PYTHON_CONTAINER \
 	--net $NETWORK_NAME --ip $PYTHON_IP \
