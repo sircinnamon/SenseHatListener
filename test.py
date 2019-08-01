@@ -167,6 +167,41 @@ class TestMap(object):
 		m2 = [[[0,0,0]]*8]*9
 		assert not sensehat_listener.validMap(m2)
 
+class TestPixel(object):
+	def test_valid(self):
+		p = {"x":0, "y":0, "colour":[0,0,0]}
+		assert sensehat_listener.validPixel(p)
+		p = {"x":7, "y":7, "colour":[]}
+		assert sensehat_listener.validPixel(p)
+
+	def test_ranges(self):
+		p = {"x":-1, "y":0, "colour":[0,0,0]}
+		assert not sensehat_listener.validPixel(p)
+		p = {"x":8, "y":7, "colour":[0,0,0]}
+		assert not sensehat_listener.validPixel(p)
+		p = {"x":0, "y":-1, "colour":[0,0,0]}
+		assert not sensehat_listener.validPixel(p)
+		p = {"x":7, "y":8, "colour":[0,0,0]}
+		assert not sensehat_listener.validPixel(p)
+
+	def test_missing_keys(self):
+		p = {"y":0, "colour":[0,0,0]}
+		assert not sensehat_listener.validPixel(p)
+		p = {"x":7, "colour":[0,0,0]}
+		assert not sensehat_listener.validPixel(p)
+		p = {"x":0, "y":0}
+		assert not sensehat_listener.validPixel(p)
+		p = {"x":7}
+		assert not sensehat_listener.validPixel(p)
+		p = {"y":8}
+		assert not sensehat_listener.validPixel(p)
+		p = {"colour":[0,0,0]}
+		assert not sensehat_listener.validPixel(p)
+
+	def test_extra_keys(self):
+		p = {"x":-1, "y":0, "colour":[0,0,0], "key":"val"}
+		assert not sensehat_listener.validPixel(p)
+
 class TestStringPostSchema(object):
 	def test_minimal_case(self):
 		p = {"string":"a"}
@@ -212,6 +247,7 @@ class TestStringPostSchema(object):
 		assert not sensehat_listener.validStringPost(p)
 
 class TestMapPostSchema(object):
+
 	def test_minimal_case(self):
 		p = {"map":[[[]]]}
 		assert sensehat_listener.validMapPost(p)
@@ -220,3 +256,35 @@ class TestMapPostSchema(object):
 	def test_empty_case(self):
 		p = {}
 		assert not sensehat_listener.validMapPost(p)
+
+	def test_bad_value_types(self):
+		p = {"map":True}
+		assert not sensehat_listener.validMapPost(p)
+		p = {"map":"Str"}
+		assert not sensehat_listener.validMapPost(p)
+		p = {"map":{"Dict":"val"}}
+		assert not sensehat_listener.validMapPost(p)
+
+	def test_extra_keys(self):
+		p = {"map":[[0,0,0]]*64, "badkey":True}
+		assert not sensehat_listener.validMapPost(p)
+
+class TestSequencePostSchema(object):
+
+	def test_minimal_case(self):
+		p = {"sequence":[{"map":[[[0,0,0]]]}]}
+		assert sensehat_listener.validSequencePost(p)
+
+	def test_step_types(self):
+		p = {
+				"sequence":[
+					{"map":[[[0,0,0]]]},
+					{"pixel":{"x":0, "y":0, "colour":[0,0,0]}},
+					{"pixels":[
+						{"x":0, "y":0, "colour":[0,0,0]},
+						{"x":1, "y":0, "colour":[0,0,0]},
+						{"x":2, "y":0, "colour":[0,0,0]}
+					]},
+				]
+			}
+		assert sensehat_listener.validSequencePost(p)

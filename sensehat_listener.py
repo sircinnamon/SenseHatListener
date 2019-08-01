@@ -359,14 +359,18 @@ def validPixel(p):
     allowed_keys = ["x", "colour", "y"]
     for k in p.keys(): 
         if k not in allowed_keys: return False
-    if "colour" in p.keys() and not validRGB(p["colour"]):
-        return False
+    if "colour" in p.keys():
+        if not validRGB(p["colour"]):
+            return False
+    else: return False
     if "x" in p.keys():
         if not isinstance(p["x"], int): return False
         if p["x"] > 7 or p["x"] < 0: return False
+    else: return False
     if "y" in p.keys():
         if not isinstance(p["y"], int): return False
         if p["y"] > 7 or p["y"] < 0: return False
+    else: return False
     return True
 
 # Schema Validations
