@@ -35,6 +35,15 @@ paths:
                     type: integer
               example:
                 length: 5
+  delete:
+    summary: "Clear job queue"
+    description: "Clear the queue of all jobs not already picked up by the worker thread."
+    operationId: "deleteQueue"
+    responses:
+      200:
+        description: "Cleared job queue"
+      401:
+        description: "User is not authenticated"
   /grid:
     get:
       summary: "Get the current grid content"
@@ -123,6 +132,28 @@ paths:
           description: "Body recieved and queued for display"
         400:
           description: "Request was malformed"
+        401:
+          description: "User is not authenticated"
+    get:
+      summary: "Get the current passive state"
+      description: "Get the map representing the idle state of the board when it is not handling tasks."
+      operationId: "getPassive"
+      responses:
+        200:
+          description: "Successful GET"
+          content:
+            application/json:
+              schema:
+                properties:
+                  map:
+                    $ref: "#/components/schemas/2dmap"
+    delete:
+      summary: "Clear passive state"
+      description: "Set a blank passive state for the entire board. If something set a passive state and never cleared it this can be used."
+      operationId: "postPassive"
+      responses:
+        200:
+          description: "Cleared passive state"
         401:
           description: "User is not authenticated"
   /flash:
