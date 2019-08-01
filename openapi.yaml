@@ -125,6 +125,28 @@ paths:
           description: "Request was malformed"
         401:
           description: "User is not authenticated"
+    get:
+      summary: "Get the current passive state"
+      description: "Get the map representing the idle state of the board when it is not handling tasks."
+      operationId: "getPassive"
+      responses:
+        200:
+          description: "Successful GET"
+          content:
+            application/json:
+              schema:
+                properties:
+                  map:
+                    $ref: "#/components/schemas/2dmap"
+    delete:
+      summary: "Clear passive state"
+      description: "Set a blank passive state for the entire board. If something set a passive state and never cleared it this can be used."
+      operationId: "postPassive"
+      responses:
+        200:
+          description: "Body recieved and queued for display"
+        401:
+          description: "User is not authenticated"
   /flash:
     post:
       summary: "Input an 8x8 Map to flash on the LED grid"

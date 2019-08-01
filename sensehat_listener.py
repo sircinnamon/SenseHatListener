@@ -4,7 +4,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
 import json
 from threading import Timer, Thread
-from queue import Queue
+from queue import Queue, Empty
 from copy import deepcopy
 import time
 import dummy_sense_hat
@@ -93,6 +93,18 @@ def handle_get(req):
         return {"status":200, "body":handle_get_queue()}
     elif(req.path == "/api/grid"):
         return {"status":200, "body":handle_get_grid()}
+    elif(req.path == "/api/passive"):
+        return {"status":200, "body":handle_get_passive()}
+    else:
+        return {"status":400, "body":{"res": "Not Found"}}
+
+def handle_delete(req):
+    if(req.path == "/api/passive"):
+        handle_delete_passive()
+        return {"status":200, "body":"Success"}
+    elif(req.path == "/api/queue"):
+        handle_delete_queue()
+        return {"status":200, "body":"Success"}
     else:
         return {"status":400, "body":{"res": "Not Found"}}
 
@@ -234,8 +246,24 @@ def processSpin(data):
 def handle_get_queue():
     return {"length": len(q.queue)}
 
+def handle_delete_queue():
+    i = 0
+    try:
+        while True:
+            q.get(block=False)
+            i = i+1
+    except Empty as e:
+        pass
+    return i
+
 def handle_get_grid():
     return {"map": make2d(sense.get_pixels())}
+
+def handle_get_passive():
+    return {"map": make2d(defaultScreen)}
+
+def handle_delete_passive():
+    defaultScreen = [[0,0,0]]*64;
 
 def formatMap(arr):
     # Parse an array with omitted default values (rows or black values)
@@ -536,6 +564,12 @@ class S(BaseHTTPRequestHandler):
     def do_GET(self):
         logging.info("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
         res = handle_get(self)
+        self._set_response(res["status"])
+        self.wfile.write("{}".format(json.dumps(res["body"])).encode('utf-8'))
+
+    def do_DELETE(self):
+        logging.info("DELETE request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
+        res = handle_delete(self)
         self._set_response(res["status"])
         self.wfile.write("{}".format(json.dumps(res["body"])).encode('utf-8'))
 
