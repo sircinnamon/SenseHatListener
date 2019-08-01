@@ -437,6 +437,8 @@ def validSequenceStep(p):
         if (len(p["pixels"])>64) or (len(p["pixels"])<2): return False
         for px in p["pixels"]:
             if not validPixel(px): return False
+    if "map" not in p and "pixel" not in p and "pixels" not in p:
+        return False
     return True
 
 def validPassivePost(p):
@@ -458,7 +460,9 @@ def validPassivePost(p):
         if not isinstance(p["pixels"], list): return False
         if (len(p["pixels"])>64) or (len(p["pixels"])<2): return False
         for px in p["pixels"]:
-            if not validPixel(px["pixel"]): return False
+            if not validPixel(px): return False
+    if "map" not in p and "pixel" not in p and "pixels" not in p:
+        return False
     return True
 
 def validFlashPost(p):

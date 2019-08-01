@@ -288,3 +288,358 @@ class TestSequencePostSchema(object):
 				]
 			}
 		assert sensehat_listener.validSequencePost(p)
+
+	def test_long_sequence(self):
+		p = {
+				"sequence":[
+					{"map":[[[0,0,0]]]},
+					{"pixel":{"x":0, "y":0, "colour":[0,0,0]}},
+					{"pixels":[
+						{"x":0, "y":0, "colour":[0,0,0]},
+						{"x":1, "y":0, "colour":[0,0,0]},
+						{"x":2, "y":0, "colour":[0,0,0]}
+					]},
+				]*20
+			}
+		assert sensehat_listener.validSequencePost(p)
+
+	def test_start(self):
+		p = {
+				"start": [[255,255,255]]*64,
+				"sequence":[
+					{"map":[[[0,0,0]]]}
+				]
+			}
+		assert sensehat_listener.validSequencePost(p)
+
+	def test_bad_value_types(self):
+		p = {"sequence":[{"map":[[[0,0,0]]]}], "start":{"pixel":{"x":0, "y":0, "colour":[0,0,0]}}}
+		assert not sensehat_listener.validSequencePost(p)
+		p = {"sequence":{"map":[[[0,0,0]]]}}
+		assert not sensehat_listener.validSequencePost(p)
+
+	def test_extra_keys(self):
+		p = {"sequence":[{"map":[[[0,0,0]]]}], "badkey":True}
+		assert not sensehat_listener.validSequencePost(p)
+		p = {"sequence":[{"map":[[[0,0,0]]]}], "start":[[[0,0,0]]], "badkey":True}
+		assert not sensehat_listener.validSequencePost(p)
+
+	def test_missing_required_keys(self):
+		p = {"start":[[[0,0,0]]]}
+		assert not sensehat_listener.validSequencePost(p)
+		p = {}
+		assert not sensehat_listener.validSequencePost(p)
+
+
+class TestSequenceStepSchema(object):
+	# Shorthand valid pixels
+	p1 = {"x":0, "y":0, "colour":[0,0,0]}
+	p2 = {"x":0, "y":1, "colour":[0,0,0]}
+
+	def test_minimal_cases(self):
+		p = {"map":[[[0,0,0]]]}
+		assert sensehat_listener.validSequenceStep(p)
+		p = {"pixel":self.p1}
+		assert sensehat_listener.validSequenceStep(p)
+		p = {"pixels":[self.p1,self.p2]}
+		assert sensehat_listener.validSequenceStep(p)
+
+	def test_delay(self):
+		p = {"map":[[[0,0,0]]], "delay": 0}
+		assert sensehat_listener.validSequenceStep(p)
+		p = {"pixel":self.p1, "delay": 0.5}
+		assert sensehat_listener.validSequenceStep(p)
+		p = {"pixels":[self.p1,self.p2], "delay": 1}
+		assert sensehat_listener.validSequenceStep(p)
+
+	def test_key_conflicts(self):
+		p = {"map":[[[0,0,0]]], "pixel":self.p1}
+		assert not sensehat_listener.validSequenceStep(p)
+		p = {"pixel":self.p1, "pixels":[self.p1,self.p2]}
+		assert not sensehat_listener.validSequenceStep(p)
+		p = {"pixels":[self.p1,self.p2], "map":[[[0,0,0]]]}
+		assert not sensehat_listener.validSequenceStep(p)
+
+	def test_missing_required_keys(self):
+		p = {}
+		assert not sensehat_listener.validSequenceStep(p)
+
+	def test_delay_range(self):
+		p = {"map":[[[0,0,0]]], "delay": -0.01}
+		assert not sensehat_listener.validSequenceStep(p)
+		p = {"map":[[[0,0,0]]], "delay": 2}
+		assert not sensehat_listener.validSequenceStep(p)
+		p = {"map":[[[0,0,0]]], "delay": 100}
+		assert not sensehat_listener.validSequenceStep(p)
+
+	def test_bad_value_types(self):
+		p = {"map":self.p1, "delay": 1}
+		assert not sensehat_listener.validSequenceStep(p)
+		p = {"pixel":[self.p1,self.p2], "delay": 1}
+		assert not sensehat_listener.validSequenceStep(p)
+		p = {"pixels":self.p1, "delay": 1}
+		assert not sensehat_listener.validSequenceStep(p)
+		p = {"pixel":self.p1, "delay": "str"}
+		assert not sensehat_listener.validSequenceStep(p)
+
+	def test_extra_keys(self):
+		p = {"pixel":self.p1, "delay": 1, "badkey":True}
+		assert not sensehat_listener.validSequenceStep(p)
+		p = {"pixels":[self.p1,self.p2], "delay": 1, "badkey":True}
+		assert not sensehat_listener.validSequenceStep(p)
+		p = {"map":[[[0,0,0]]], "badkey":True}
+		assert not sensehat_listener.validSequenceStep(p)
+
+class TestPassivePostSchema(object):
+	# Shorthand valid pixels
+	p1 = {"x":0, "y":0, "colour":[0,0,0]}
+	p2 = {"x":0, "y":1, "colour":[0,0,0]}
+
+	def test_minimal_cases(self):
+		p = {"map":[[[0,0,0]]]}
+		assert sensehat_listener.validPassivePost(p)
+		p = {"pixel":self.p1}
+		assert sensehat_listener.validPassivePost(p)
+		p = {"pixels":[self.p1,self.p2]}
+		assert sensehat_listener.validPassivePost(p)
+
+	def test_key_conflicts(self):
+		p = {"map":[[[0,0,0]]], "pixel":self.p1}
+		assert not sensehat_listener.validPassivePost(p)
+		p = {"pixel":self.p1, "pixels":[self.p1,self.p2]}
+		assert not sensehat_listener.validPassivePost(p)
+		p = {"pixels":[self.p1,self.p2], "map":[[[0,0,0]]]}
+		assert not sensehat_listener.validPassivePost(p)
+
+	def test_missing_required_keys(self):
+		p = {}
+		assert not sensehat_listener.validPassivePost(p)
+
+	def test_bad_value_types(self):
+		p = {"map":self.p1}
+		assert not sensehat_listener.validPassivePost(p)
+		p = {"pixel":[self.p1,self.p2]}
+		assert not sensehat_listener.validPassivePost(p)
+		p = {"pixels":self.p1}
+		assert not sensehat_listener.validPassivePost(p)
+
+	def test_extra_keys(self):
+		p = {"pixel":self.p1, "badkey":True}
+		assert not sensehat_listener.validPassivePost(p)
+		p = {"pixels":[self.p1,self.p2], "badkey":True}
+		assert not sensehat_listener.validPassivePost(p)
+		p = {"map":[[[0,0,0]]], "badkey":True}
+		assert not sensehat_listener.validPassivePost(p)
+
+class TestFlashPostSchema(object):
+
+	def test_minimal_case(self):
+		p = {"map":[[[0,0,0]]]}
+		assert sensehat_listener.validFlashPost(p)
+
+	def test_all_keys(self):
+		p = {"map":[[[0,0,0]]], "ontime":0.1, "offtime":0.1, "loops":2}
+		assert sensehat_listener.validFlashPost(p)
+
+	def test_ontime_range(self):
+		p = {"map":[[[0,0,0]]], "ontime":0}
+		assert sensehat_listener.validFlashPost(p)
+		p = {"map":[[[0,0,0]]], "ontime":1}
+		assert sensehat_listener.validFlashPost(p)
+		p = {"map":[[[0,0,0]]], "ontime":0.5}
+		assert sensehat_listener.validFlashPost(p)
+		p = {"map":[[[0,0,0]]], "ontime":-0.5}
+		assert not sensehat_listener.validFlashPost(p)
+		p = {"map":[[[0,0,0]]], "ontime":2}
+		assert not sensehat_listener.validFlashPost(p)
+
+	def test_offtime_range(self):
+		p = {"map":[[[0,0,0]]], "offtime":0}
+		assert sensehat_listener.validFlashPost(p)
+		p = {"map":[[[0,0,0]]], "offtime":1}
+		assert sensehat_listener.validFlashPost(p)
+		p = {"map":[[[0,0,0]]], "offtime":0.5}
+		assert sensehat_listener.validFlashPost(p)
+		p = {"map":[[[0,0,0]]], "offtime":-0.5}
+		assert not sensehat_listener.validFlashPost(p)
+		p = {"map":[[[0,0,0]]], "offtime":2}
+		assert not sensehat_listener.validFlashPost(p)
+
+	def test_loops(self):
+		p = {"map":[[[0,0,0]]], "loops":0}
+		assert sensehat_listener.validFlashPost(p)
+		p = {"map":[[[0,0,0]]], "loops":1}
+		assert sensehat_listener.validFlashPost(p)
+		p = {"map":[[[0,0,0]]], "loops":20}
+		assert sensehat_listener.validFlashPost(p)
+		p = {"map":[[[0,0,0]]], "loops":0.5}
+		assert not sensehat_listener.validFlashPost(p)
+		p = {"map":[[[0,0,0]]], "loops":-0.5}
+		assert not sensehat_listener.validFlashPost(p)
+
+	def test_missing_required_keys(self):
+		p = {}
+		assert not sensehat_listener.validFlashPost(p)
+		p = {"loops":1}
+		assert not sensehat_listener.validFlashPost(p)
+		p = {"ontime":1}
+		assert not sensehat_listener.validFlashPost(p)
+		p = {"offtime":1}
+		assert not sensehat_listener.validFlashPost(p)
+		p = {"ontime":0.1, "offtime":0.1, "loops":2}
+		assert not sensehat_listener.validFlashPost(p)
+
+	def test_bad_value_types(self):
+		p = {"map":{}, "ontime":0.1, "offtime":0.1, "loops":2}
+		assert not sensehat_listener.validFlashPost(p)
+		p = {"map":[[[0,0,0]]], "ontime":"str", "offtime":0.1, "loops":2}
+		assert not sensehat_listener.validFlashPost(p)
+		p = {"map":[[[0,0,0]]], "ontime":0.1, "offtime":"str", "loops":2}
+		assert not sensehat_listener.validFlashPost(p)
+		p = {"map":[[[0,0,0]]], "ontime":0.1, "offtime":0.1, "loops":"str"}
+		assert not sensehat_listener.validFlashPost(p)
+
+	def test_extra_keys(self):
+		p = {"map":[[[0,0,0]]], "badkey":0.1}
+		assert not sensehat_listener.validFlashPost(p)
+		p = {"map":[[[0,0,0]]],"ontime":0.1, "offtime":0.1, "loops":2, "badkey":1}
+		assert not sensehat_listener.validFlashPost(p)
+
+
+class TestScrollPostSchema(object):
+
+	def test_minimal_case(self):
+		p = {"map":[[[0,0,0]]]}
+		assert sensehat_listener.validScrollPost(p)
+
+	def test_all_keys(self):
+		p = {"map":[[[0,0,0]]], "direction":1, "speed":1}
+		assert sensehat_listener.validScrollPost(p)
+
+	def test_direction(self):
+		p = {"map":[[[0,0,0]]], "direction":0}
+		assert sensehat_listener.validScrollPost(p)
+		p = {"map":[[[0,0,0]]], "direction":1}
+		assert sensehat_listener.validScrollPost(p)
+		p = {"map":[[[0,0,0]]], "direction":5}
+		assert sensehat_listener.validScrollPost(p)
+		p = {"map":[[[0,0,0]]], "direction":7}
+		assert sensehat_listener.validScrollPost(p)
+		# Invalid
+		p = {"map":[[[0,0,0]]], "direction":-1}
+		assert not sensehat_listener.validScrollPost(p)
+		p = {"map":[[[0,0,0]]], "direction":8}
+		assert not sensehat_listener.validScrollPost(p)
+		p = {"map":[[[0,0,0]]], "direction":0.5}
+		assert not sensehat_listener.validScrollPost(p)
+
+	def test_speed_range(self):
+		p = {"map":[[[0,0,0]]], "speed":0}
+		assert sensehat_listener.validScrollPost(p)
+		p = {"map":[[[0,0,0]]], "speed":1}
+		assert sensehat_listener.validScrollPost(p)
+		p = {"map":[[[0,0,0]]], "speed":0.5}
+		assert sensehat_listener.validScrollPost(p)
+		p = {"map":[[[0,0,0]]], "speed":-0.5}
+		assert not sensehat_listener.validScrollPost(p)
+		p = {"map":[[[0,0,0]]], "speed":2}
+		assert not sensehat_listener.validScrollPost(p)
+
+	def test_missing_required_keys(self):
+		p = {"direction":1, "speed":1}
+		assert not sensehat_listener.validScrollPost(p)
+		p = {"direction":1}
+		assert not sensehat_listener.validScrollPost(p)
+		p = {"speed":1}
+		assert not sensehat_listener.validScrollPost(p)
+
+	def test_bad_value_types(self):
+		p = {"map":{}, "direction":1, "speed":1}
+		assert not sensehat_listener.validScrollPost(p)
+		p = {"map":[[[0,0,0]]], "direction":"str", "speed":1}
+		assert not sensehat_listener.validScrollPost(p)
+		p = {"map":[[[0,0,0]]], "direction":1, "speed":"str"}
+		assert not sensehat_listener.validScrollPost(p)
+
+	def test_extra_keys(self):
+		p = {"map":[[[0,0,0]]], "badkey":0.1}
+		assert not sensehat_listener.validScrollPost(p)
+		p = {"map":[[[0,0,0]]], "direction":1, "speed":1, "badkey":True}
+		assert not sensehat_listener.validScrollPost(p)
+
+
+class TestSpinPostSchema(object):
+
+	def test_minimal_case(self):
+		p = {"map":[[[0,0,0]]]}
+		assert sensehat_listener.validSpinPost(p)
+
+	def test_all_keys(self):
+		p = {"map":[[[0,0,0]]], "loops":1, "delay":1, "counterclockwise":True}
+		assert sensehat_listener.validSpinPost(p)
+
+	def test_loops(self):
+		p = {"map":[[[0,0,0]]], "loops":0}
+		assert sensehat_listener.validSpinPost(p)
+		p = {"map":[[[0,0,0]]], "loops":1}
+		assert sensehat_listener.validSpinPost(p)
+		p = {"map":[[[0,0,0]]], "loops":20}
+		assert sensehat_listener.validSpinPost(p)
+		p = {"map":[[[0,0,0]]], "loops":0.5}
+		assert not sensehat_listener.validSpinPost(p)
+		p = {"map":[[[0,0,0]]], "loops":-0.5}
+		assert not sensehat_listener.validSpinPost(p)
+
+	def test_delay_range(self):
+		p = {"map":[[[0,0,0]]], "delay":0}
+		assert sensehat_listener.validSpinPost(p)
+		p = {"map":[[[0,0,0]]], "delay":1}
+		assert sensehat_listener.validSpinPost(p)
+		p = {"map":[[[0,0,0]]], "delay":0.5}
+		assert sensehat_listener.validSpinPost(p)
+		p = {"map":[[[0,0,0]]], "delay":-0.5}
+		assert not sensehat_listener.validSpinPost(p)
+		p = {"map":[[[0,0,0]]], "delay":2}
+		assert not sensehat_listener.validSpinPost(p)
+
+	def test_counterclockwise(self):
+		p = {"map":[[[0,0,0]]], "counterclockwise":True}
+		assert sensehat_listener.validSpinPost(p)
+		p = {"map":[[[0,0,0]]], "counterclockwise":False}
+		assert sensehat_listener.validSpinPost(p)
+		p = {"map":[[[0,0,0]]], "counterclockwise":"str"}
+		assert not sensehat_listener.validSpinPost(p)
+		p = {"map":[[[0,0,0]]], "counterclockwise":{}}
+		assert not sensehat_listener.validSpinPost(p)
+
+	def test_missing_required_keys(self):
+		p = {"loops":1, "delay":1, "counterclockwise":True}
+		assert not sensehat_listener.validSpinPost(p)
+		p = {"delay":1, "counterclockwise":True}
+		assert not sensehat_listener.validSpinPost(p)
+		p = {"loops":1, "counterclockwise":True}
+		assert not sensehat_listener.validSpinPost(p)
+		p = {"loops":1, "delay":1}
+		assert not sensehat_listener.validSpinPost(p)
+		p = {"loops":1}
+		assert not sensehat_listener.validSpinPost(p)
+		p = {"delay":1}
+		assert not sensehat_listener.validSpinPost(p)
+		p = {"counterclockwise":True}
+		assert not sensehat_listener.validSpinPost(p)
+
+	def test_bad_value_types(self):
+		p = {"map":{}, "loops":1, "delay":1, "counterclockwise":True}
+		assert not sensehat_listener.validSpinPost(p)
+		p = {"map":[[[0,0,0]]], "loops":"0.1", "delay":1, "counterclockwise":True}
+		assert not sensehat_listener.validSpinPost(p)
+		p = {"map":[[[0,0,0]]], "loops":1, "delay":"str", "counterclockwise":True}
+		assert not sensehat_listener.validSpinPost(p)
+		p = {"map":[[[0,0,0]]], "loops":1, "delay":1, "counterclockwise":"True"}
+		assert not sensehat_listener.validSpinPost(p)
+
+	def test_extra_keys(self):
+		p = {"map":[[[0,0,0]]], "badkey":0.1}
+		assert not sensehat_listener.validSpinPost(p)
+		p = {"map":[[[0,0,0]]], "loops":1, "delay":1, "counterclockwise":True, "badkey":True}
+		assert not sensehat_listener.validSpinPost(p)
