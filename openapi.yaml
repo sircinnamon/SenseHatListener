@@ -150,7 +150,7 @@ paths:
     delete:
       summary: "Clear passive state"
       description: "Set a blank passive state for the entire board. If something set a passive state and never cleared it this can be used."
-      operationId: "postPassive"
+      operationId: "deletePassive"
       responses:
         200:
           description: "Cleared passive state"
