@@ -2,6 +2,26 @@ import requests
 import sensehat_listener
 from threading import Thread
 import json
+import dummy_sense_hat
+from time import sleep
+
+dummy = dummy_sense_hat.DummySenseHat()
+sensehat_listener.sense = dummy
+sensehat_listener.t.cancel()
+
+# Adjust timers so tests can run faster
+sensehat_listener.DELAY_BETWEEN_HANDLERS = 0
+sensehat_listener.MAP_PAUSE = 0.5
+sensehat_listener.SEQ_FINAL_PAUSE =0.5
+
+server = Thread(target=sensehat_listener.run, kwargs={"port":8080})
+server.daemon = True
+server.start()
+
+worker = Thread(target=sensehat_listener.worker)
+worker.daemon = True
+worker.start()
+sleep(1)
 
 class TestCORS(object):
 	base_url = "http://localhost:8080/api{}"
@@ -58,9 +78,42 @@ class TestStringEndpoint(object):
 		assert "Access-Control-Allow-Headers" in r.headers
 
 	def test_POST(self):
-		data = {"string": "Test", "speed": 0.01}
+		data = {"string": "a", "speed": 0.01}
 		r = requests.post(self.base_url, json.dumps(data))
 		assert r.status_code == 200
+		# Delay so screen and task clear
+		sleep(1+len(data["string"])*0.1)
+
+	def test_400(self):
+		data = {}
+		r = requests.post(self.base_url, json.dumps(data))
+		assert r.status_code == 400
+
+class TestMapEndpoint(object):
+	base_url = "http://localhost:8080/api/map"
+
+	def test_CORS(self):
+		r = requests.options(self.base_url)
+		assert "Access-Control-Allow-Origin" in r.headers
+		assert "Access-Control-Allow-Methods" in r.headers
+		assert "Access-Control-Allow-Headers" in r.headers
+
+	def test_POST(self):
+		global dummy
+		dummy.set_pixels([[1,1,1]]*64)
+		data = {"map": [[255,255,255]]*64}
+		r = requests.post(self.base_url, json.dumps(data))
+		sleep(0.05)
+		r = requests.get("http://localhost:8080/api/grid")
+		grid = r.json()["map"]
+		assert r.status_code == 200
+		assert grid == [[[255,255,255]]*8]*8
+		sleep(sensehat_listener.MAP_PAUSE)
+
+	def test_400(self):
+		data = {}
+		r = requests.post(self.base_url, json.dumps(data))
+		assert r.status_code == 400
 
 class TestColour(object):
 

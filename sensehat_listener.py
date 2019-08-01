@@ -10,7 +10,6 @@ import time
 import dummy_sense_hat
 import argparse
 
-DUMMY_SENSE_HAT = True
 try:
     from sense_hat import SenseHat
     sense = SenseHat()
