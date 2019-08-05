@@ -150,7 +150,10 @@ def processString(data):
     scroll_speed=0.1
     if("speed" in data):
         scroll_speed=min(data["speed"], 1)
-    sense.show_message(data["string"])
+    sense.show_message(data["string"], 
+                       text_colour=text_colour,
+                       back_colour=back_colour,
+                       scroll_speed=scroll_speed)
     time.sleep(1+len(data["string"])*0.1)
 
 def processSeq(data):
