@@ -11,7 +11,11 @@ class DummySenseHat(object):
 	def set_rotation(self, deg):
 		print("[{}] set rotation {}".format(datetime.datetime.now().strftime("%H:%M:%S"), deg))
 
-	def show_message(self, msg):
+	def show_message(self,
+					 msg,
+					 text_colour=[255,255,255],
+					 back_colour=[0,0,0],
+					 scroll_speed=0.1):
 		print("[{}] print message \"{}\"".format(datetime.datetime.now().strftime("%H:%M:%S"), msg))
 
 	def set_pixels(self, pix):

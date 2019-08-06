@@ -4,6 +4,7 @@ from threading import Thread
 import json
 import dummy_sense_hat
 from time import sleep
+import pytest
 
 dummy = dummy_sense_hat.DummySenseHat()
 sensehat_listener.sense = dummy
@@ -26,43 +27,9 @@ sleep(1)
 class TestCORS(object):
 	base_url = "http://localhost:8080/api{}"
 
-	def test_map_endpoint(self):
-		url = self.base_url.format("/map")
-		r = requests.options(url)
-		assert "Access-Control-Allow-Origin" in r.headers
-		assert "Access-Control-Allow-Methods" in r.headers
-		assert "Access-Control-Allow-Headers" in r.headers
-
-	def test_sequence_endpoint(self):
-		url = self.base_url.format("/sequence")
-		r = requests.options(url)
-		assert "Access-Control-Allow-Origin" in r.headers
-		assert "Access-Control-Allow-Methods" in r.headers
-		assert "Access-Control-Allow-Headers" in r.headers
-
-	def test_passive_endpoint(self):
-		url = self.base_url.format("/passive")
-		r = requests.options(url)
-		assert "Access-Control-Allow-Origin" in r.headers
-		assert "Access-Control-Allow-Methods" in r.headers
-		assert "Access-Control-Allow-Headers" in r.headers
-
-	def test_scroll_endpoint(self):
-		url = self.base_url.format("/scroll")
-		r = requests.options(url)
-		assert "Access-Control-Allow-Origin" in r.headers
-		assert "Access-Control-Allow-Methods" in r.headers
-		assert "Access-Control-Allow-Headers" in r.headers
-
-	def test_spin_endpoint(self):
-		url = self.base_url.format("/spin")
-		r = requests.options(url)
-		assert "Access-Control-Allow-Origin" in r.headers
-		assert "Access-Control-Allow-Methods" in r.headers
-		assert "Access-Control-Allow-Headers" in r.headers
-
-	def test_flash_endpoint(self):
-		url = self.base_url.format("/flash")
+	@pytest.mark.parametrize("endpoint", ["/queue","/grid", "/string", "/map", "/sequence", "/passive", "/flash", "/scroll", "/spin"])
+	def test_endpoint(self, endpoint):
+		url = self.base_url.format(endpoint)
 		r = requests.options(url)
 		assert "Access-Control-Allow-Origin" in r.headers
 		assert "Access-Control-Allow-Methods" in r.headers
