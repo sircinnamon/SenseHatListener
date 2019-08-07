@@ -25,3 +25,23 @@ class DummySenseHat(object):
 	def get_pixels(self):
 		print("[{}] get pixels".format(datetime.datetime.now().strftime("%H:%M:%S")))
 		return self.pixels
+
+	def set_pixel(self, x, y, *args):
+		if len(args) == 1: pixel = list(args[0])
+		elif len(args) == 3: pixel = [args[0], args[1], args[2]]
+		else: raise ValueError("Invalid rgb argument")
+		if x > 7 or x < 0:
+		    raise ValueError('X position must be between 0 and 7')
+		if y > 7 or y < 0:
+		    raise ValueError('Y position must be between 0 and 7')
+
+		print("[{}] set pixel ({},{}) = {}".format(datetime.datetime.now().strftime("%H:%M:%S"), x, y, pixel))
+		self.pixels[(8*y)+x] = pixel
+
+	def get_pixel(self, x, y):
+		if x > 7 or x < 0:
+		    raise ValueError('X position must be between 0 and 7')
+		if y > 7 or y < 0:
+		    raise ValueError('Y position must be between 0 and 7')
+		print("[{}] get pixel ({},{})".format(datetime.datetime.now().strftime("%H:%M:%S"), x, y))
+		return self.pixels[(8*y)+x]
