@@ -4,6 +4,7 @@ from threading import Thread
 import json
 import dummy_sense_hat
 from time import sleep
+import pytest
 
 dummy = dummy_sense_hat.DummySenseHat()
 sensehat_listener.sense = dummy
@@ -26,43 +27,9 @@ sleep(1)
 class TestCORS(object):
 	base_url = "http://localhost:8080/api{}"
 
-	def test_map_endpoint(self):
-		url = self.base_url.format("/map")
-		r = requests.options(url)
-		assert "Access-Control-Allow-Origin" in r.headers
-		assert "Access-Control-Allow-Methods" in r.headers
-		assert "Access-Control-Allow-Headers" in r.headers
-
-	def test_sequence_endpoint(self):
-		url = self.base_url.format("/sequence")
-		r = requests.options(url)
-		assert "Access-Control-Allow-Origin" in r.headers
-		assert "Access-Control-Allow-Methods" in r.headers
-		assert "Access-Control-Allow-Headers" in r.headers
-
-	def test_passive_endpoint(self):
-		url = self.base_url.format("/passive")
-		r = requests.options(url)
-		assert "Access-Control-Allow-Origin" in r.headers
-		assert "Access-Control-Allow-Methods" in r.headers
-		assert "Access-Control-Allow-Headers" in r.headers
-
-	def test_scroll_endpoint(self):
-		url = self.base_url.format("/scroll")
-		r = requests.options(url)
-		assert "Access-Control-Allow-Origin" in r.headers
-		assert "Access-Control-Allow-Methods" in r.headers
-		assert "Access-Control-Allow-Headers" in r.headers
-
-	def test_spin_endpoint(self):
-		url = self.base_url.format("/spin")
-		r = requests.options(url)
-		assert "Access-Control-Allow-Origin" in r.headers
-		assert "Access-Control-Allow-Methods" in r.headers
-		assert "Access-Control-Allow-Headers" in r.headers
-
-	def test_flash_endpoint(self):
-		url = self.base_url.format("/flash")
+	@pytest.mark.parametrize("endpoint", ["/queue","/grid", "/string", "/map", "/sequence", "/passive", "/flash", "/scroll", "/spin"])
+	def test_endpoint(self, endpoint):
+		url = self.base_url.format(endpoint)
 		r = requests.options(url)
 		assert "Access-Control-Allow-Origin" in r.headers
 		assert "Access-Control-Allow-Methods" in r.headers
@@ -70,12 +37,6 @@ class TestCORS(object):
 
 class TestStringEndpoint(object):
 	base_url = "http://localhost:8080/api/string"
-
-	def test_CORS(self):
-		r = requests.options(self.base_url)
-		assert "Access-Control-Allow-Origin" in r.headers
-		assert "Access-Control-Allow-Methods" in r.headers
-		assert "Access-Control-Allow-Headers" in r.headers
 
 	def test_POST(self):
 		data = {"string": "a", "speed": 0.01}
@@ -92,23 +53,92 @@ class TestStringEndpoint(object):
 class TestMapEndpoint(object):
 	base_url = "http://localhost:8080/api/map"
 
-	def test_CORS(self):
-		r = requests.options(self.base_url)
-		assert "Access-Control-Allow-Origin" in r.headers
-		assert "Access-Control-Allow-Methods" in r.headers
-		assert "Access-Control-Allow-Headers" in r.headers
-
 	def test_POST(self):
 		global dummy
 		dummy.set_pixels([[1,1,1]]*64)
 		data = {"map": [[255,255,255]]*64}
 		r = requests.post(self.base_url, json.dumps(data))
+		assert r.status_code == 200
 		sleep(0.05)
 		r = requests.get("http://localhost:8080/api/grid")
 		grid = r.json()["map"]
-		assert r.status_code == 200
 		assert grid == [[[255,255,255]]*8]*8
 		sleep(sensehat_listener.MAP_PAUSE)
+
+	def test_400(self):
+		data = {}
+		r = requests.post(self.base_url, json.dumps(data))
+		assert r.status_code == 400
+
+class TestSequenceEndpoint(object):
+	base_url = "http://localhost:8080/api/sequence"
+
+	def test_POST(self):
+		global dummy
+		sensehat_listener.defaultScreen = [[0,0,0]]*64
+		data = {
+			"start": [[255,0,0]],
+			"sequence": [
+				{
+					"pixel": {"colour": [255,0,0],"x": 1,"y": 0},
+					"delay": 0.2
+				},
+				{
+					"pixel": {"colour": [255,0,0],"x": 2,"y": 0},
+					"delay":0.2
+				}
+			]
+		}
+		r = requests.post(self.base_url, json.dumps(data))
+		assert r.status_code == 200
+		sleep(0.05)
+		r = requests.get("http://localhost:8080/api/grid")
+		grid1 = r.json()["map"]
+		assert grid1[0][1]==[255,0,0]
+		assert grid1[0][2]==[0,0,0]
+		sleep(0.2)
+		r = requests.get("http://localhost:8080/api/grid")
+		grid2 = r.json()["map"]
+		assert grid2[0][1]==[255,0,0]
+		assert grid2[0][2]==[255,0,0]
+		sleep(sensehat_listener.SEQ_FINAL_PAUSE+2)
+		r = requests.get("http://localhost:8080/api/grid")
+		grid3 = r.json()["map"]
+		assert grid3 == [[[0,0,0]]*8]*8
+
+	def test_400(self):
+		data = {}
+		r = requests.post(self.base_url, json.dumps(data))
+		assert r.status_code == 400
+
+class TestPassiveEndpoint(object):
+	base_url = "http://localhost:8080/api/passive"
+
+	def test_POST(self):
+		global dummy
+		sensehat_listener.defaultScreen = [[0,0,0]]*64
+		data = {
+			"pixel":{
+				"x":2,
+				"y":2,
+				"colour":[0,255,0]
+			}
+		}
+		r = requests.post(self.base_url, json.dumps(data))
+		assert r.status_code == 200
+		sleep(0.05)
+		r = requests.get("http://localhost:8080/api/grid")
+		grid1 = r.json()["map"]
+		expected_grid = [[],[],[[],[],[0,255,0]]]
+		expected_grid = sensehat_listener.make2d(sensehat_listener.formatMap(expected_grid))
+		assert grid1 == expected_grid
+		data["pixel"]["colour"] = [0,0,0]
+		r = requests.post(self.base_url, json.dumps(data))
+		sleep(0.05)
+		r = requests.get("http://localhost:8080/api/grid")
+		grid2 = r.json()["map"]
+		expected_grid = [[[0,0,0]]*8]*8
+		assert grid2 == expected_grid
 
 	def test_400(self):
 		data = {}
