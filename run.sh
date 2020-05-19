@@ -36,5 +36,5 @@ docker run -d \
 	--name $NGINX_CONTAINER \
 	--add-host=$PYTHON_HOSTNAME:$PYTHON_IP \
 	--net $NETWORK_NAME --ip $NGINX_IP \
-	-p 8080:8080 \
+	-p 10080:80 \
 	nginx:1.14.0
