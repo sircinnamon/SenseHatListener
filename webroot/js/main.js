@@ -272,25 +272,25 @@ function submit(){
 	var xhr = new XMLHttpRequest();
 	// Mode set via mode url param
 	if(mode=="history"){
-		url = "/api/sequence"
+		url = "/sensehat/api/sequence"
 		data = (JSON.stringify({start:format_board(boardHistoryStart),sequence:format_sequence(boardHistory)}));
 	} else if(mode=="string") {
-		url = "/api/string"
+		url = "/sensehat/api/string"
 		data = (JSON.stringify({string:getParameterByName("data")}));
 	} else if(mode=="frames") {
-		url = "/api/sequence"
+		url = "/sensehat/api/sequence"
 		data = (JSON.stringify({sequence:frames}));
 	} else if(mode=="flash") {
-		url = "/api/flash"
+		url = "/sensehat/api/flash"
 		data = (JSON.stringify({map:format_board(boardState)}));
 	} else if(mode=="spin") {
-		url = "/api/spin"
+		url = "/sensehat/api/spin"
 		data = (JSON.stringify({map:format_board(boardState)}));
 	} else if(mode=="scroll") {
-		url = "/api/scroll"
+		url = "/sensehat/api/scroll"
 		data = (JSON.stringify({map:format_board(boardState)}));
 	} else {
-		url = "/api/map"
+		url = "/sensehat/api/map"
 		data = (JSON.stringify({map:format_board(boardState)}));
 	}
 	if ("withCredentials" in xhr) {
