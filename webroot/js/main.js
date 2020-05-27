@@ -340,7 +340,7 @@ function format_board(board){
 function format_sequence(sequence){
 	new_seq = []
 	for (var i = 0; i < sequence.length; i++) {
-		new_seq.push({x:sequence[i].x, y: sequence[i].y, colour:hexToRgb(sequence[i].colour)})
+		new_seq.push({pixel:{x:sequence[i].x, y: sequence[i].y, colour:hexToRgb(sequence[i].colour)}})
 	}
 	return new_seq
 }
