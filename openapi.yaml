@@ -12,7 +12,7 @@ info:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 servers:
-- url: "http://S0106bc9b68c2bc01.cg.shawcable.net:8080/api"
+- url: "https://thor.sircinnamon.ca/sensehat/api"
 # basePath: "/api"
 # schemes:
 # - "http"
