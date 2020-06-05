@@ -1,0 +1,24 @@
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<noscript>
+			<h1>Sorry, this site requires JavaScript to run :(</h1>
+		</noscript>
+
+		<title>Sir Cinnamon's SenseHat Controller</title>
+		<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+		<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+		<script language="JavaScript" type="text/javascript" src="./js/sensehat.min.js"></script>
+	</head>
+	<body style="background: #2C2F33;">
+		<main id="reactapp">
+		</main>
+	</body>
+	<script>
+		let props = {
+			mode: getParameterByName("mode")
+		};
+		let domContainer = document.querySelector('#reactapp');
+		page = ReactDOM.render(React.createElement(App, props), domContainer)
+	</script>
+</html>
