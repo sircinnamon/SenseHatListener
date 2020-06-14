@@ -100,7 +100,6 @@ class Controls extends React.Component {
 					}
 					id="brush"
 				>
-					&nbsp;
 				</button>
 				<input
 					id="brushColor"
