@@ -1,15 +1,15 @@
 class Controls extends React.Component {
 	constructor(props) {
-		super(props);
-		this.state = {};
-		this.colorSelector = React.createRef();
+		super(props)
+		this.state = {}
+		this.colorSelector = React.createRef()
 	}
 
 	componentDidMount() {
 		forceColourChange = function () {
 			//console.log("FORCECHANGE")
-			this.props.setColourFn("#" + this.colorSelector.current.value);
-		}.bind(this);
+			this.props.setColourFn("#" + this.colorSelector.current.value)
+		}.bind(this)
 	}
 	render() {
 		let divStyle = {
@@ -23,19 +23,19 @@ class Controls extends React.Component {
 			maxWidth: "10vmin",
 			width: "10vmin",
 			margin: "0vmin 1vmin"
-		};
+		}
 		let brushStyle = {
 			...svgStyle,
 			float: "left",
 			borderBottom: this.props.selectedTool == "brush" ? "1vh solid #7289DA" : "",
 			borderRadius: this.props.selectedTool == "brush" ? "1vh" : ""
-		};
+		}
 		let eraserStyle = {
 			...svgStyle,
 			float: "left",
 			borderTop: this.props.selectedTool == "eraser" ? "1vh solid #7289DA" : "",
 			borderRadius: this.props.selectedTool == "eraser" ? "1vh" : ""
-		};
+		}
 		let tooltipStyle = {
 			opacity: "0",
 			userSelect: "none",
@@ -52,7 +52,7 @@ class Controls extends React.Component {
 			top: "-55%",
 			left: "calc(10%)",
 			transition: "opacity 0.5s linear"
-		};
+		}
 		return (
 			<div style={divStyle}>
 				<svg
@@ -62,7 +62,7 @@ class Controls extends React.Component {
 					viewBox="0 0 36 36"
 					transform="scale(-1,1)"
 					onClick={() => {
-						this.props.setToolFn("brush");
+						this.props.setToolFn("brush")
 					}}
 				>
 					<path
@@ -114,7 +114,7 @@ class Controls extends React.Component {
 						viewBox="0 0 36 36"
 						transform="rotate(180)"
 						onClick={() => {
-							this.props.setToolFn("eraser");
+							this.props.setToolFn("eraser")
 						}}
 					>
 						<path
@@ -148,7 +148,7 @@ class Controls extends React.Component {
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 36 36"
 						onClick={() => {
-							this.props.clearFn();
+							this.props.clearFn()
 						}}
 					>
 						<path
@@ -212,7 +212,7 @@ class Controls extends React.Component {
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 36 36"
 							onClick={() => {
-								this.props.submitFn();
+								this.props.submitFn()
 							}}
 						>
 							<path
@@ -224,6 +224,6 @@ class Controls extends React.Component {
 					</div>
 				</div>
 			</div>
-		);
+		)
 	}
 }

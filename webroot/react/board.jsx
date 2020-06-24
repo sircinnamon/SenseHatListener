@@ -1,23 +1,23 @@
 class Board extends React.Component {
 	constructor(props) {
-		super(props);
-		this.state = {};
+		super(props)
+		this.state = {}
 
 		this.updateCell = function (row, column) {
-			let b = this.props.state;
+			let b = this.props.state
 			if (this.props.controlHeld) {
 				// Colour picker
-				this.props.setColourFn(b[row][column]);
+				this.props.setColourFn(b[row][column])
 			} else if (this.props.selectedTool == "eraser" || this.props.shiftHeld) {
-				this.props.updateStateFn({ x: column, y: row }, null);
+				this.props.updateStateFn({ x: column, y: row }, null)
 			} else if (this.props.selectedTool == "brush") {
-				this.props.updateStateFn({ x: column, y: row }, this.props.selectedColour);
+				this.props.updateStateFn({ x: column, y: row }, this.props.selectedColour)
 			}
-		};
+		}
 	}
 
 	render() {
-		let rows = [];
+		let rows = []
 		for (var i = 0; i < 8; i++) {
 			let row = (
 				<Row
@@ -27,15 +27,15 @@ class Board extends React.Component {
 					state={this.props.state[i]}
 					mouseDown={this.props.mouseDown}
 				/>
-			);
-			rows = rows.concat(row);
+			)
+			rows = rows.concat(row)
 		}
 		let tableStyle = {
 			borderCollapse: "collapse",
 			width: "80vmin",
 			height: "80vmin",
 			margin: "auto"
-		};
+		}
 		let divStyle = {
 			boxSizing: "border-box",
 			position: "relative",
@@ -44,25 +44,25 @@ class Board extends React.Component {
 			margin: "auto",
 			padding: "2vmin",
 			background: "#23272A"
-		};
+		}
 		return (
 			<div style={divStyle}>
 				<table style={tableStyle}>
 					<tbody>{rows}</tbody>
 				</table>
 			</div>
-		);
+		)
 	}
 }
 
 class Row extends React.Component {
 	constructor(props) {
-		super(props);
-		this.state = {};
+		super(props)
+		this.state = {}
 	}
 
 	render() {
-		let cells = [];
+		let cells = []
 		for (var i = 0; i < 8; i++) {
 			let cell = (
 				<Cell
@@ -73,47 +73,47 @@ class Row extends React.Component {
 					state={this.props.state[i]}
 					mouseDown={this.props.mouseDown}
 				/>
-			);
-			cells = cells.concat(cell);
+			)
+			cells = cells.concat(cell)
 		}
-		return <tr>{cells}</tr>;
+		return <tr>{cells}</tr>
 	}
 }
 
 class Cell extends React.Component {
 	constructor(props) {
-		super(props);
-		this.state = {};
+		super(props)
+		this.state = {}
 
 		this.onMouseMove = function (evt) {
 			if (this.props.mouseDown) {
-				evt.preventDefault();
-				this.onMouseDown(evt);
+				evt.preventDefault()
+				this.onMouseDown(evt)
 			}
-		};
+		}
 
 		this.onMouseDown = function (evt) {
-			evt.preventDefault();
-			this.props.updateCellFn(this.props.row, this.props.column);
-		};
+			evt.preventDefault()
+			this.props.updateCellFn(this.props.row, this.props.column)
+		}
 	}
 
 	render() {
-		let bg = "";
+		let bg = ""
 		if (this.props.state) {
-			bg = hexToRgb(this.props.state);
-			bg = `rgb(${bg[0]},${bg[1]},${bg[2]})`;
+			bg = hexToRgb(this.props.state)
+			bg = `rgb(${bg[0]},${bg[1]},${bg[2]})`
 		}
 		let style = {
 			border: "2px solid #99AAB5",
 			background: bg
-		};
+		}
 		return (
 			<td
 				onMouseMove={this.onMouseMove.bind(this)}
 				onMouseDown={this.onMouseDown.bind(this)}
 				style={style}
 			/>
-		);
+		)
 	}
 }
