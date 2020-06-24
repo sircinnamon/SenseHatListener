@@ -1,5 +1,3 @@
-eslint webroot/react/**
+npm run-script lint
 
-babel webroot/react -d webroot/babel
-
-uglifyjs webroot/babel/* -o webroot/js/sensehat-react.min.js
+npm run-script build
