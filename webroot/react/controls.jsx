@@ -16,7 +16,6 @@ class Controls extends React.Component {
 	render() {
 		let divStyle = {
 			width: "80vmin",
-			margin: "auto",
 			margin: "2vh auto",
 			height: "10vmin"
 		}
