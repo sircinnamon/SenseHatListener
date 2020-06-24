@@ -56,6 +56,18 @@ class Board extends React.Component {
 		)
 	}
 }
+Board.propTypes = {
+	altHeld: window.PropTypes.bool,
+	controlHeld: window.PropTypes.bool,
+	shiftHeld: window.PropTypes.bool,
+	mouseDown: window.PropTypes.bool,
+	saveFrameFn: window.PropTypes.fn,
+	selectedColour: window.PropTypes.string,
+	selectedTool: window.PropTypes.string,
+	setColourFn: window.PropTypes.fn,
+	state: window.PropTypes.array,
+	updateStateFn: window.PropTypes.fn
+}
 
 class Row extends React.Component {
 	constructor(props) {
@@ -80,6 +92,12 @@ class Row extends React.Component {
 		}
 		return <tr>{cells}</tr>
 	}
+}
+Row.propTypes = {
+	index: window.PropTypes.number,
+	mouseDown: window.PropTypes.bool,
+	state: window.PropTypes.array,
+	updateCellFn: window.PropTypes.fn
 }
 
 class Cell extends React.Component {
@@ -118,4 +136,11 @@ class Cell extends React.Component {
 			/>
 		)
 	}
+}
+Cell.propTypes = {
+	column: window.PropTypes.number,
+	row: window.PropTypes.number,
+	mouseDown: window.PropTypes.bool,
+	state: window.PropTypes.string,
+	updateCellFn: window.PropTypes.fn
 }

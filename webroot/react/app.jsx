@@ -189,3 +189,8 @@ class App extends React.Component {
 		)
 	}
 }
+
+App.propTypes = {
+	dataParam: window.PropTypes.string,
+	mode: window.PropTypes.string
+}
