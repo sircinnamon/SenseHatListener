@@ -187,8 +187,6 @@ class App extends React.Component {
 					showFrameTooltip={this.state.showFrameTooltip}
 				/>
 				<div>
-					{JSON.stringify(this.props)}
-					{JSON.stringify(this.state)}
 				</div>
 			</div>
 		);
