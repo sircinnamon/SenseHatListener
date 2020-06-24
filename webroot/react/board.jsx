@@ -61,12 +61,12 @@ Board.propTypes = {
 	controlHeld: window.PropTypes.bool,
 	shiftHeld: window.PropTypes.bool,
 	mouseDown: window.PropTypes.bool,
-	saveFrameFn: window.PropTypes.fn,
+	saveFrameFn: window.PropTypes.func,
 	selectedColour: window.PropTypes.string,
 	selectedTool: window.PropTypes.string,
-	setColourFn: window.PropTypes.fn,
+	setColourFn: window.PropTypes.func,
 	state: window.PropTypes.array,
-	updateStateFn: window.PropTypes.fn
+	updateStateFn: window.PropTypes.func
 }
 
 class Row extends React.Component {
@@ -97,7 +97,7 @@ Row.propTypes = {
 	index: window.PropTypes.number,
 	mouseDown: window.PropTypes.bool,
 	state: window.PropTypes.array,
-	updateCellFn: window.PropTypes.fn
+	updateCellFn: window.PropTypes.func
 }
 
 class Cell extends React.Component {
@@ -142,5 +142,5 @@ Cell.propTypes = {
 	row: window.PropTypes.number,
 	mouseDown: window.PropTypes.bool,
 	state: window.PropTypes.string,
-	updateCellFn: window.PropTypes.fn
+	updateCellFn: window.PropTypes.func
 }

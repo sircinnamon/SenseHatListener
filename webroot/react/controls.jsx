@@ -229,10 +229,10 @@ class Controls extends React.Component {
 	}
 }
 Controls.propTypes = {
-	clearFn: window.PropTypes.fn,
-	setColourFn: window.PropTypes.fn,
-	setToolFn: window.PropTypes.fn,
-	submitFn: window.PropTypes.fn,
+	clearFn: window.PropTypes.func,
+	setColourFn: window.PropTypes.func,
+	setToolFn: window.PropTypes.func,
+	submitFn: window.PropTypes.func,
 	selectedColour: window.PropTypes.string,
 	selectedTool: window.PropTypes.string,
 	showFrameTooltip: window.PropTypes.bool,
