@@ -1,0 +1,29 @@
+{
+  "name": "sensehatlistener-build",
+  "version": "1.0.0",
+  "description": "* Try to find alternative to --priveliged (--device?) * Implement Auth options",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint webroot/react/**",
+    "build": "babel webroot/react -d webroot/babel && uglifyjs webroot/babel/* -o webroot/js/sensehat-react.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sircinnamon/SenseHatListener.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sircinnamon/SenseHatListener/issues"
+  },
+  "homepage": "https://github.com/sircinnamon/SenseHatListener#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.10.3",
+    "@babel/core": "^7.10.3",
+    "@babel/preset-env": "^7.10.3",
+    "@babel/preset-react": "^7.10.1",
+    "eslint": "^7.3.1",
+    "eslint-plugin-react": "^7.20.0",
+    "uglify-js": "^3.10.0"
+  }
+}

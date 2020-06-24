@@ -1,0 +1,5 @@
+node_modules
+package-lock.json
+webroot/babel
+webroot/openapi.yaml
+webroot/js/sensehat-react.min.js
