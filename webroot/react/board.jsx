@@ -1,3 +1,5 @@
+/* global React */
+/* exported Board, Row, Cell */
 class Board extends React.Component {
 	constructor(props) {
 		super(props)

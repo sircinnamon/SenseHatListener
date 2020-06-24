@@ -1,3 +1,5 @@
+/* global React, format_board, format_sequence */
+/* exported App */
 class App extends React.Component {
 	constructor(props) {
 		super(props)
@@ -51,11 +53,6 @@ class App extends React.Component {
 			if ("withCredentials" in xhr) {
 				// Check if the XMLHttpRequest object has a "withCredentials" property.
 				// "withCredentials" only exists on XMLHTTPRequest2 objects.
-				xhr.open("POST", url, true)
-			} else if (typeof XDomainRequest != "undefined") {
-				// Otherwise, check if XDomainRequest.
-				// XDomainRequest only exists in IE, and is IE's way of making CORS requests.
-				xhr = new XDomainRequest()
 				xhr.open("POST", url, true)
 			} else {
 				console.log("Not supported")
