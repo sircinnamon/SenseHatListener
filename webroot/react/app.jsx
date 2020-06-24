@@ -176,7 +176,7 @@ class App extends React.Component {
 						this.setState({ selectedTool: tool })
 					}).bind(this)}
 					submitFn={(() => {
-						console.log(this.state.boardState)
+						// console.log(this.state.boardState)
 						this.submit()
 					}).bind(this)}
 					selectedTool={this.state.selectedTool}
