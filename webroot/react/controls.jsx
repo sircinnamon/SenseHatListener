@@ -1,4 +1,4 @@
-/* global React, forceColourChange */
+/* global React, forceColourChange:writable */
 /* exported Controls, forceColourChange */
 class Controls extends React.Component {
 	constructor(props) {
