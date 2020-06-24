@@ -1,4 +1,4 @@
-/* global React */
+/* global React, hexToRgb */
 /* exported Board, Row, Cell */
 class Board extends React.Component {
 	constructor(props) {

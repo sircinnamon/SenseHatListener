@@ -1,5 +1,5 @@
 /* global React, forceColourChange */
-/* exported Controls */
+/* exported Controls, forceColourChange */
 class Controls extends React.Component {
 	constructor(props) {
 		super(props)
