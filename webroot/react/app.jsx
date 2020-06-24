@@ -1,4 +1,4 @@
-/* global React, format_board, format_sequence */
+/* global React, format_board, format_sequence, Board, Controls */
 /* exported App */
 class App extends React.Component {
 	constructor(props) {
