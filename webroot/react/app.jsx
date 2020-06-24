@@ -58,8 +58,8 @@ class App extends React.Component {
 				xhr = new XDomainRequest()
 				xhr.open("POST", url, true)
 			} else {
-				return
 				console.log("Not supported")
+				return
 			}
 			let that = this
 			xhr.onreadystatechange = function () {
