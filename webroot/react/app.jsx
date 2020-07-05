@@ -1,4 +1,4 @@
-/* global React, format_board, format_sequence, Board, Controls */
+/* global React, format_board, format_sequence, Board, Controls, FrameList */
 /* exported App */
 class App extends React.Component {
 	constructor(props) {
@@ -15,7 +15,8 @@ class App extends React.Component {
 			showFrameTooltip: false,
 			shiftHeld: false,
 			controlHeld: false,
-			altHeld: false
+			altHeld: false,
+			frameViewerOpen: false
 		}
 
 		this.submit = function () {
@@ -121,23 +122,41 @@ class App extends React.Component {
 			}
 			this.setState({ boardHistory: bh, boardHistoryStart: bhs })
 		}
+
+		this.handleMouseDown = function(){
+			this.setState({ mouseDown: true })
+		}
+
+		this.handleMouseUp = function(){
+			this.setState({ mouseDown: false })
+		}
+
+		this.handleKeyDown = function(ev){
+			this.keyChange(ev, true)
+		}
+
+		this.handleKeyUp = function(ev){
+			this.keyChange(ev, false)
+		}
+	}
+
+	componentDidMount(){
+		document.addEventListener("mousedown", this.handleMouseDown.bind(this), false)
+		document.addEventListener("mouseup", this.handleMouseUp.bind(this), false)
+		document.addEventListener("keydown", this.handleKeyDown.bind(this), false)
+		document.addEventListener("keyup", this.handleKeyUp.bind(this), false)
+	}
+
+	componentWillUnmount(){
+		document.removeEventListener("mousedown", this.handleMouseDown.bind(this), false)
+		document.removeEventListener("mouseup", this.handleMouseUp.bind(this), false)
+		document.removeEventListener("keydown", this.handleKeyDown.bind(this), false)
+		document.removeEventListener("keyup", this.handleKeyUp.bind(this), false)
 	}
 
 	render() {
 		return (
 			<div
-				onMouseDown={() => {
-					this.setState({ mouseDown: true })
-				}}
-				onMouseUp={() => {
-					this.setState({ mouseDown: false })
-				}}
-				onKeyDown={(ev) => {
-					this.keyChange(ev, true)
-				}}
-				onKeyUp={(ev) => {
-					this.keyChange(ev, false)
-				}}
 				tabIndex={-1} //Need this for some reason
 				style={{ border: "none", outline: "none" }}
 			>
@@ -182,6 +201,15 @@ class App extends React.Component {
 					selectedTool={this.state.selectedTool}
 					showSentTooltip={this.state.showSentTooltip}
 					showFrameTooltip={this.state.showFrameTooltip}
+				/>
+				<FrameList
+					isOpen={this.state.frameViewerOpen}
+					frames={this.state.frames}
+					updateFramesFn={((newFrames)=>{this.setState({frames: newFrames})}).bind(this)}
+					toggleOpenFn={(()=>{this.setState({frameViewerOpen: !this.state.frameViewerOpen})}).bind(this)}
+					setBoardStateFn={((val) => {
+						this.setState({boardState: val})
+					}).bind(this)}
 				/>
 				<div>
 				</div>
