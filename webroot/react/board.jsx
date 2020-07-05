@@ -34,15 +34,15 @@ class Board extends React.Component {
 		}
 		let tableStyle = {
 			borderCollapse: "collapse",
-			width: "80vmin",
-			height: "80vmin",
+			width: "76vmin",
+			height: "76vmin",
 			margin: "auto"
 		}
 		let divStyle = {
 			boxSizing: "border-box",
 			position: "relative",
-			width: "84vmin",
-			height: "84vmin",
+			width: "80vmin",
+			height: "80vmin",
 			margin: "auto",
 			padding: "2vmin",
 			background: "#23272A"

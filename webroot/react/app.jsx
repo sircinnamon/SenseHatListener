@@ -1,9 +1,10 @@
-/* global React, format_board, format_sequence, Board, Controls, FrameList */
+/* global React, format_board, format_sequence, Board, Controls, FrameList, ModeMenu */
 /* exported App */
 class App extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
+			mode: (this.props.mode || "map"),
 			boardState: [[], [], [], [], [], [], [], []],
 			boardHistory: [],
 			boardHistoryStart: [[], [], [], [], [], [], [], []],
@@ -22,7 +23,7 @@ class App extends React.Component {
 		this.submit = function () {
 			let xhr = new XMLHttpRequest()
 			let url, data
-			let mode = this.props.mode
+			let mode = this.state.mode
 			let baseUrl = "https://thor.sircinnamon.ca" //""
 			// Mode set via mode url param
 			if (mode == "history") {
@@ -160,6 +161,10 @@ class App extends React.Component {
 				tabIndex={-1} //Need this for some reason
 				style={{ border: "none", outline: "none" }}
 			>
+				<ModeMenu
+					setMode={((m)=>{this.setState({mode: m})}).bind(this)}
+					currentMode={this.state.mode}
+				/>
 				<Board
 					state={this.state.boardState}
 					updateStateFn={((xy, val) => {
@@ -203,6 +208,7 @@ class App extends React.Component {
 					showFrameTooltip={this.state.showFrameTooltip}
 				/>
 				<FrameList
+					hide={(this.state.mode != "frames" || (this.state.frames.length == 0))}
 					isOpen={this.state.frameViewerOpen}
 					frames={this.state.frames}
 					updateFramesFn={((newFrames)=>{this.setState({frames: newFrames})}).bind(this)}
@@ -220,5 +226,5 @@ class App extends React.Component {
 
 App.propTypes = {
 	dataParam: window.PropTypes.string,
-	mode: window.PropTypes.string
+	mode: window.PropTypes.oneOf(["map", "history", "frames", "flash", "spin", "scroll"])
 }

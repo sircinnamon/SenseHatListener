@@ -78,7 +78,7 @@ class FrameList extends React.Component {
 			frames = frames.concat(frame)
 		}
 		return (
-			<div>
+			<div style={{display: (this.props.hide?"none":"")}}>
 				<div style={popoutStyle}>
 					{frames}
 				</div>
@@ -91,6 +91,7 @@ class FrameList extends React.Component {
 }
 
 FrameList.propTypes = {
+	hide: window.PropTypes.bool,
 	isOpen: window.PropTypes.bool,
 	frames: window.PropTypes.array,
 	updateFramesFn: window.PropTypes.func,
