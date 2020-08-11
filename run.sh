@@ -11,13 +11,15 @@ PYTHON_HOSTNAME=python
 NGINX_CONTAINER=sh-nginx
 PYTHON_CONTAINER=sh-python
 
-docker network create \
-	--subnet $NETWORK_IP \
-	--opt com.docker.network.bridge.name=$NETWORK_NAME \
-	--opt com.docker.network.bridge.enable_icc=true \
-	$NETWORK_NAME
+if [ -z "$(docker network ls -q -f name=$NETWORK_NAME)" ]; then
+	docker network create \
+		--subnet $NETWORK_IP \
+		--opt com.docker.network.bridge.name=$NETWORK_NAME \
+		--opt com.docker.network.bridge.enable_icc=true \
+		$NETWORK_NAME
+fi
 
-docker rm $PYTHON_CONTAINER
+docker stop $PYTHON_CONTAINER && docker rm $PYTHON_CONTAINER
 docker run -d \
 	-v $(pwd)/sensehat_listener.py:/sensehat_listener.py \
 	-v $(pwd)/dummy_sense_hat.py:/dummy_sense_hat.py \
@@ -27,7 +29,7 @@ docker run -d \
 	--privileged \
 	sensehat python3 /sensehat_listener.py -p 80
 
-docker rm $NGINX_CONTAINER
+docker stop $NGINX_CONTAINER && docker rm $NGINX_CONTAINER
 docker run -d \
 	-v $(pwd)/nginx.conf:/etc/nginx/nginx.conf \
 	-v $(pwd)/webroot:/var/www/html \
