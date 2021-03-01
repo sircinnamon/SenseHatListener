@@ -312,7 +312,7 @@ def shiftMap(m, x, y):
     # Shift 8x8 arr by given x and y filling w/ 0s
     newmap = deepcopy(m)
     if abs(y)>0:
-        shiftarr(newmap, y, [])
+        shiftArr(newmap, y, [])
     if abs(x)>0:
         for i in range(len(newmap)):
             newmap[i] = shiftArr(newmap[i], x, [])
